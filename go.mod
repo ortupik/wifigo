@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/dgraph-io/badger/v3 v3.2103.5
 	github.com/flosch/pongo2/v6 v6.0.0
-	github.com/getsentry/sentry-go v0.32.0
+	github.com/getsentry/sentry-go v0.33.0
 	github.com/getsentry/sentry-go/logrus v0.32.0
 	github.com/gin-contrib/sessions v1.0.3
 	github.com/gin-gonic/gin v1.10.0
