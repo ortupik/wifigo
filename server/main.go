@@ -90,7 +90,7 @@ func main() {
 	}
 
 	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
-	if currentDevice == nil {
+	if currentDevice != nil {
 		err2 = mikrotikManager.AddDevice(sampleDevice)
 		handleError(err, "Failed to add MikroTik device")
 	}
