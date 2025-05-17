@@ -75,16 +75,16 @@ func main() {
 		Description: "Main office router",
 	}
 
-	store.DeleteConfig(badger.DeviceConfigType, "");
+	//store.DeleteConfig(badger.DeviceConfigType, "");
 	var deviceWrapper badger.DeviceConfigWrapper
 	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
 	if err != nil {
-		//if err.Error() == "device config not found: mikrotik1" {
+		if err.Error() == "device config not found: mikrotik1" {
 			err = store.SaveConfig(badger.DeviceConfigWrapper{DeviceConfig: sampleDevice})
 			handleError(err, "Failed to save sample device config")
-		/*} else {
+		} else {
 			handleError(err, "Failed to get device config")
-		}*/
+		}
 	} else {
 		existingDevice := deviceWrapper.DeviceConfig
 		log.Printf("Found existing device config: %+v", existingDevice)
