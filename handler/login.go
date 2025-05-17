@@ -7,12 +7,12 @@ import (
 	"github.com/pilinux/argon2"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/service"
 )
 
 // Login receives tasks from controller.Login.
@@ -78,7 +78,7 @@ func Login(payload model.AuthPayload) (httpResponse model.HTTPResponse, httpStat
 
 	// when 2FA is enabled for this application (ACTIVATE_2FA=yes)
 	if configSecurity.Must2FA == config.Activated {
-		db := database.GetDB()
+		db := database.GetDB(config.AppDB)
 		twoFA := model.TwoFA{}
 
 		// have the user configured 2FA

@@ -6,7 +6,7 @@ Please check the releases
 
 ## v1.6.0-rc.1 [Sep 03 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.6.0-rc.1
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.6.0-rc.1
 
 &#9889; optimized database configuration files
 
@@ -26,7 +26,7 @@ Link: https://github.com/pilinux/gorest/releases/tag/v1.6.0-rc.1
 
 ## v1.5.1 [Jul 23 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.5.1
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.5.1
 
 &#9889; middleware, renderer and commonly used functions merged here
 
@@ -38,7 +38,7 @@ There is no need to import anything from `gorestlib` anymore.
 
 - Release and tag removed from github to avoid import
 
-&#9889; middleware, renderer and commonly used functions moved to a separate repo `github.com/pilinux/gorestlib`
+&#9889; middleware, renderer and commonly used functions moved to a separate repo `github.com/ortupik/wifigolib`
 
 &#9889; `logrus` updated to 1.9.0
 
@@ -46,7 +46,7 @@ There is no need to import anything from `gorestlib` anymore.
 
 ## v1.4.5 [Jul 18 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.4.5
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.4.5
 
 &#9889; `gin` updated to 1.8.1
 
@@ -64,7 +64,7 @@ Link: https://github.com/pilinux/gorest/releases/tag/v1.4.5
 
 ## v1.4.4 [Jun 05 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.4.4
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.4.4
 
 &#9889; gorm `postgres` driver updated to 1.3.7
 
@@ -78,19 +78,19 @@ Link: https://github.com/pilinux/gorest/releases/tag/v1.4.4
 
 ## v1.4.3 [Mar 22 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.4.3
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.4.3
 
 &#9889; MongoDB driver switched to `Qmgo`
 
-&#9889; Controller examples for MongoDB updated
+&#9889; Controller servers for MongoDB updated
 
-&#9889; Critical security issues (CWE-089, CWE-943) fixed in controller examples
+&#9889; Critical security issues (CWE-089, CWE-943) fixed in controller servers
 
 &#9889; Code refactored in database config files
 
 ## v1.4.2 [Mar 14 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.4.2
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.4.2
 
 &#9889; MongoDB driver added
 
@@ -102,7 +102,7 @@ Link: https://github.com/pilinux/gorest/releases/tag/v1.4.2
 
 ## v1.4.1 [Jan 15 - 2022]
 
-Link: https://github.com/pilinux/gorest/releases/tag/v1.4.1
+Link: https://github.com/ortupik/wifigo/releases/tag/v1.4.1
 
 &#9889; Bump to gorm 1.22.5
 

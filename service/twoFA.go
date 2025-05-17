@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"math/big"
 
-	"github.com/pilinux/gorest/config"
+	"github.com/ortupik/wifigo/config"
 )
 
 // GetHash returns single or nested hash of the data

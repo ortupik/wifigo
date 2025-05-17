@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pilinux/gorest/lib/middleware"
+	"github.com/ortupik/wifigo/lib/middleware"
 )
 
 // TestCheckOrigin - test the CheckOrigin middleware
@@ -20,36 +20,36 @@ func TestCheckOrigin(t *testing.T) {
 		{
 			name:          "Allowed Origin (*), should pass",
 			originAllowed: "*",
-			origin:        "http://example.com",
+			origin:        "http://server.com",
 			expectedCode:  http.StatusOK,
 		},
 		{
 			name:          "Allowed Origin (null), should pass",
 			originAllowed: "null",
-			origin:        "http://example.com",
+			origin:        "http://server.com",
 			expectedCode:  http.StatusOK,
 		},
 		{
 			name:          "Allowed Origin (empty), should pass",
 			originAllowed: "",
-			origin:        "http://example.com",
+			origin:        "http://server.com",
 			expectedCode:  http.StatusOK,
 		},
 		{
 			name:          "Allowed Origin (http), should pass",
-			originAllowed: "http://Example.com",
-			origin:        "http://eXample.com",
+			originAllowed: "http://server.com",
+			origin:        "http://server.com",
 			expectedCode:  http.StatusOK,
 		},
 		{
 			name:          "Allowed Origin (https), should pass",
-			originAllowed: "https://example.com",
-			origin:        "https://example.com",
+			originAllowed: "https://server.com",
+			origin:        "https://server.com",
 			expectedCode:  http.StatusOK,
 		},
 		{
 			name:          "Forbidden Origin, should fail",
-			originAllowed: "http://example.com",
+			originAllowed: "http://server.com",
 			origin:        "http://other-domain.com",
 			expectedCode:  http.StatusForbidden,
 		},

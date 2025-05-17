@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/handler"
-	"github.com/pilinux/gorest/lib/renderer"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/handler"
+	"github.com/ortupik/wifigo/lib/renderer"
 )
 
 // Logout -

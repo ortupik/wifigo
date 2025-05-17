@@ -3,7 +3,7 @@ package lib_test
 import (
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 // TestInitRateLimiter - test the InitRateLimiter function

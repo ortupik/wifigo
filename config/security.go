@@ -4,8 +4,8 @@ import (
 	"crypto"
 	"net/http"
 
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
 )
 
 // SecurityConfig ...

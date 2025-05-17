@@ -14,12 +14,12 @@ import (
 	"github.com/pilinux/argon2"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/service"
 )
 
 // PasswordForgot handles jobs for controller.PasswordForgot
@@ -152,7 +152,7 @@ func PasswordRecover(authPayload model.AuthPayload) (httpResponse model.HTTPResp
 	}
 
 	// get auth info from database
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	auth := model.Auth{}
 
 	// is data.value an email or hash of an email
@@ -419,7 +419,7 @@ func PasswordUpdate(claims middleware.MyCustomClaims, authPayload model.AuthPayl
 	}
 
 	// read DB
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	auth := model.Auth{}
 	twoFA := model.TwoFA{}
 	process2FA := false

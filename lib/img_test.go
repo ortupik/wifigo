@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 func TestByteToPNG(t *testing.T) {

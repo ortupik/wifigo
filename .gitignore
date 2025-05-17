@@ -6,7 +6,7 @@
 vendor/
 crosscompile*.sh
 gorest
-example/example
+server/server
 keys
 tmp
 .vscode

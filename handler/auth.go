@@ -13,12 +13,12 @@ import (
 	"github.com/pilinux/argon2"
 	"github.com/pilinux/crypt"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/service"
 )
 
 // CreateUserAuth receives tasks from controller.CreateUserAuth.
@@ -26,7 +26,7 @@ import (
 // supports both the legacy way of saving user email in plaintext
 // and the recommended way of applying encryption at rest.
 func CreateUserAuth(auth model.Auth) (httpResponse model.HTTPResponse, httpStatusCode int) {
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 
 	// user must not be able to manipulate all fields
 	authFinal := new(model.Auth)
@@ -221,7 +221,7 @@ func UpdateEmail(claims middleware.MyCustomClaims, req model.TempEmail) (httpRes
 	// ok: email is not registered yet, continue...
 
 	// db connection
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 
 	// step 3: load user credentials
 	auth := model.Auth{}

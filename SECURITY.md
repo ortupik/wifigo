@@ -12,5 +12,5 @@
 
 ## Reporting a Vulnerability
 
-Please open a new [issue](https://github.com/pilinux/gorest/issues/new/choose)
+Please open a new [issue](https://github.com/ortupik/wifigo/issues/new/choose)
 to report a vulnerability.

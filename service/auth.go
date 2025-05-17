@@ -9,14 +9,14 @@ import (
 	"github.com/pilinux/crypt"
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
 )
 
 // GetUserByEmail fetches auth info by email or hash of the email
 func GetUserByEmail(email string, decryptEmail bool) (*model.Auth, error) {
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	var err error
 
 	var auth model.Auth
@@ -55,7 +55,7 @@ func GetUserByEmail(email string, decryptEmail bool) (*model.Auth, error) {
 
 // GetEmailByAuthID fetches user email by authID
 func GetEmailByAuthID(authID uint64) (string, error) {
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	var auth model.Auth
 
 	err := db.Where("auth_id = ?", authID).First(&auth).Error
@@ -74,7 +74,7 @@ func GetEmailByAuthID(authID uint64) (string, error) {
 
 // IsAuthIDValid checks if the given authID is available in the database
 func IsAuthIDValid(authID uint64) bool {
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	var auth model.Auth
 
 	err := db.Where("auth_id = ?", authID).First(&auth).Error

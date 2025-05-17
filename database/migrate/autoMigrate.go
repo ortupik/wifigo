@@ -4,9 +4,9 @@ package migrate
 import (
 	"fmt"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
 )
 
 // Load all the models
@@ -15,9 +15,9 @@ type twoFA model.TwoFA
 type twoFABackup model.TwoFABackup
 type tempEmail model.TempEmail
 
-// DropAllTables - careful! It will drop all the tables!
-func DropAllTables() error {
-	db := database.GetDB()
+// DropAppTables - careful! It will drop all the tables!
+func DropAppTables() error {
+	db := database.GetDB(config.AppDB)
 
 	if err := db.Migrator().DropTable(
 		&tempEmail{},
@@ -37,8 +37,8 @@ func DropAllTables() error {
 // - Only create tables with missing columns and missing indexes
 // - Will not change/delete any existing columns and their types
 func StartMigration(configure config.Configuration) error {
-	db := database.GetDB()
-	configureDB := configure.Database.RDBMS
+	db := database.GetDB(config.AppDB)
+	configureDB := configure.Database.RDBMS[config.AppDB]
 	driver := configureDB.Env.Driver
 
 	if driver == "mysql" {

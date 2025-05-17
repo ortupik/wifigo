@@ -3,7 +3,7 @@ package lib_test
 import (
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 func TestValidateEmail(t *testing.T) {
@@ -11,7 +11,7 @@ func TestValidateEmail(t *testing.T) {
 		email string
 		want  bool
 	}{
-		{"test@example.com", true},
+		{"test@server.com", true},
 		{"in", false},
 		{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@gmail.com", false},
 		{"invalid", false},

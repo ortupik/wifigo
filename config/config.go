@@ -1,6 +1,3 @@
-// Package config is responsible for reading all environment
-// variables and set up the base configuration for a
-// functional application
 package config
 
 import (
@@ -18,8 +15,8 @@ import (
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/sha3"
 
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
 )
 
 // Activated - "yes" keyword to activate a service
@@ -28,15 +25,100 @@ const Activated string = "yes"
 // PrefixJtiBlacklist - to manage JWT blacklist in Redis database
 const PrefixJtiBlacklist string = "gorest-blacklist-jti:"
 
+// Database names for RDBMS map
+const (
+	AppDB    string = "wifigo"
+	RadiusDB string = "radius"
+)
+
 // Configuration - server and db configuration variables
 type Configuration struct {
-	Version    string
-	Database   DatabaseConfig
-	EmailConf  EmailConfig
-	Logger     LoggerConfig
-	Server     ServerConfig
-	Security   SecurityConfig
+	Version string
+	Database DatabaseConfig
+	EmailConf EmailConfig
+	Logger LoggerConfig
+	Server ServerConfig
+	Security SecurityConfig
 	ViewConfig ViewConfig
+	Auth     AuthConfig
+}
+
+type AuthConfig struct {
+	Enable bool
+	SessionSecret string
+}
+// RDBMSConfig - RDBMS database configuration variables
+type RDBMSConfig struct {
+	Activate string
+	Env struct {
+		Driver   string
+		Host     string
+		Port     string
+		TimeZone string
+	}
+	Access struct {
+		DbName string
+		User   string
+		Pass   string
+	}
+	Ssl struct {
+		Sslmode    string
+		MinTLS     string
+		RootCA     string
+		ServerCert string
+		ClientCert string
+		ClientKey  string
+	}
+	Conn struct {
+		MaxIdleConns    int
+		MaxOpenConns    int
+		ConnMaxLifetime time.Duration
+	}
+	Log struct {
+		LogLevel int
+	}
+}
+
+// RedisConfig - Redis database configuration variables
+type RedisConfig struct {
+	Activate string
+	Env struct {
+		Host string
+		Port string
+	}
+	Conn struct {
+		PoolSize int
+		ConnTTL  int
+	}
+}
+
+//BadgerDb - Config
+type BadgerDBConfig struct {
+	DataDir string
+}
+
+// DeviceConfig represents a MikroTik device configuration
+type DeviceConfig struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	PoolSize    int    `json:"poolSize"` // Number of connections to maintain
+	ISPID       string `json:"ispId"`    // Associated ISP
+	Description string `json:"description,omitempty"`
+}
+
+// MongoConfig - MongoDB configuration variables
+type MongoConfig struct {
+	Activate string
+	Env struct {
+		URI        string
+		AppName    string
+		PoolSize   uint64
+		PoolMon    string
+		ConnTTL    int
+	}
 }
 
 var configAll *Configuration
@@ -82,6 +164,8 @@ func Config() (err error) {
 
 	configAll = &configuration
 
+	auth()
+
 	return
 }
 
@@ -92,17 +176,30 @@ func GetConfig() *Configuration {
 
 // database - all DB variables
 func database() (databaseConfig DatabaseConfig, err error) {
+	databaseConfig.RDBMS = make(map[string]RDBMSConfig) // Initialize the map
+
 	// RDBMS
 	activateRDBMS := strings.ToLower(strings.TrimSpace(os.Getenv("ACTIVATE_RDBMS")))
 	if activateRDBMS == Activated {
-		dbRDBMS, errThis := databaseRDBMS()
+		// Load APP_DB config
+		appDBConfig, errThis := loadRDBMSConfig("APP_DB")
 		if errThis != nil {
 			err = errThis
 			return
 		}
-		databaseConfig.RDBMS = dbRDBMS.RDBMS
+		appDBConfig.Activate = activateRDBMS // Set activation status for this instance
+		databaseConfig.RDBMS[AppDB] = appDBConfig
+
+		// Load RADIUS_DB config
+		radiusDBConfig, errThis := loadRDBMSConfig("RADIUS_DB")
+		if errThis != nil {
+			err = errThis
+			return
+		}
+		radiusDBConfig.Activate = activateRDBMS // Set activation status for this instance
+		databaseConfig.RDBMS[RadiusDB] = radiusDBConfig
 	}
-	databaseConfig.RDBMS.Activate = activateRDBMS
+
 
 	// REDIS
 	activateRedis := strings.ToLower(strings.TrimSpace(os.Getenv("ACTIVATE_REDIS")))
@@ -128,50 +225,93 @@ func database() (databaseConfig DatabaseConfig, err error) {
 	}
 	databaseConfig.MongoDB.Activate = activateMongo
 
+
+	// Badger
+	activateBadger := strings.ToLower(strings.TrimSpace(os.Getenv("ACTIVATE_BADGER")))
+	if activateBadger == Activated {
+		dbBadger, errThis := databaseBadger()
+		if errThis != nil {
+			err = errThis
+			return
+		}
+		databaseConfig.BadgerDB = dbBadger.BadgerDB
+	}
+	databaseConfig.BadgerDB.Activate = activateBadger
+
 	return
 }
 
-// databaseRDBMS - all RDBMS variables
-func databaseRDBMS() (databaseConfig DatabaseConfig, err error) {
+// loadRDBMSConfig - loads configuration for a single RDBMS instance using a prefix
+func loadRDBMSConfig(prefix string) (rdbmsConfig RDBMSConfig, err error) {
 	// Env
-	databaseConfig.RDBMS.Env.Driver = strings.ToLower(strings.TrimSpace(os.Getenv("DBDRIVER")))
-	databaseConfig.RDBMS.Env.Host = strings.TrimSpace(os.Getenv("DBHOST"))
-	databaseConfig.RDBMS.Env.Port = strings.TrimSpace(os.Getenv("DBPORT"))
-	databaseConfig.RDBMS.Env.TimeZone = strings.TrimSpace(os.Getenv("DBTIMEZONE"))
+	rdbmsConfig.Env.Driver = strings.ToLower(strings.TrimSpace(os.Getenv(prefix + "_DBDRIVER")))
+	rdbmsConfig.Env.Host = strings.TrimSpace(os.Getenv(prefix + "_DBHOST"))
+	rdbmsConfig.Env.Port = strings.TrimSpace(os.Getenv(prefix + "_DBPORT"))
+	rdbmsConfig.Env.TimeZone = strings.TrimSpace(os.Getenv(prefix + "_DBTIMEZONE"))
+
 	// Access
-	databaseConfig.RDBMS.Access.DbName = strings.TrimSpace(os.Getenv("DBNAME"))
-	databaseConfig.RDBMS.Access.User = strings.TrimSpace(os.Getenv("DBUSER"))
-	databaseConfig.RDBMS.Access.Pass = strings.TrimSpace(os.Getenv("DBPASS"))
+	rdbmsConfig.Access.DbName = strings.TrimSpace(os.Getenv(prefix + "_DBNAME"))
+	rdbmsConfig.Access.User = strings.TrimSpace(os.Getenv(prefix + "_DBUSER"))
+	rdbmsConfig.Access.Pass = strings.TrimSpace(os.Getenv(prefix + "_DBPASS"))
+
 	// SSL
-	databaseConfig.RDBMS.Ssl.Sslmode = strings.TrimSpace(os.Getenv("DBSSLMODE"))
-	databaseConfig.RDBMS.Ssl.MinTLS = strings.TrimSpace(os.Getenv("DBSSL_TLS_MIN"))
-	databaseConfig.RDBMS.Ssl.RootCA = strings.TrimSpace(os.Getenv("DBSSL_ROOT_CA"))
-	databaseConfig.RDBMS.Ssl.ServerCert = strings.TrimSpace(os.Getenv("DBSSL_SERVER_CERT"))
-	databaseConfig.RDBMS.Ssl.ClientCert = strings.TrimSpace(os.Getenv("DBSSL_CLIENT_CERT"))
-	databaseConfig.RDBMS.Ssl.ClientKey = strings.TrimSpace(os.Getenv("DBSSL_CLIENT_KEY"))
+	rdbmsConfig.Ssl.Sslmode = strings.TrimSpace(os.Getenv(prefix + "_DBSSLMODE"))
+	rdbmsConfig.Ssl.MinTLS = strings.TrimSpace(os.Getenv(prefix + "_DBSSL_TLS_MIN"))
+	rdbmsConfig.Ssl.RootCA = strings.TrimSpace(os.Getenv(prefix + "_DBSSL_ROOT_CA"))
+	rdbmsConfig.Ssl.ServerCert = strings.TrimSpace(os.Getenv(prefix + "_DBSSL_SERVER_CERT"))
+	rdbmsConfig.Ssl.ClientCert = strings.TrimSpace(os.Getenv(prefix + "_DBSSL_CLIENT_CERT"))
+	rdbmsConfig.Ssl.ClientKey = strings.TrimSpace(os.Getenv(prefix + "_DBSSL_CLIENT_KEY"))
+
 	// Conn
-	dbMaxIdleConns := strings.TrimSpace(os.Getenv("DBMAXIDLECONNS"))
-	dbMaxOpenConns := strings.TrimSpace(os.Getenv("DBMAXOPENCONNS"))
-	dbConnMaxLifetime := strings.TrimSpace(os.Getenv("DBCONNMAXLIFETIME"))
-	databaseConfig.RDBMS.Conn.MaxIdleConns, err = strconv.Atoi(dbMaxIdleConns)
+	dbMaxIdleConns := strings.TrimSpace(os.Getenv(prefix + "_DBMAXIDLECONNS"))
+	dbMaxOpenConns := strings.TrimSpace(os.Getenv(prefix + "_DBMAXOPENCONNS"))
+	dbConnMaxLifetime := strings.TrimSpace(os.Getenv(prefix + "_DBCONNMAXLIFETIME"))
+
+	rdbmsConfig.Conn.MaxIdleConns, err = strconv.Atoi(dbMaxIdleConns)
 	if err != nil {
+		// Handle error or set a default, depending on your requirements
+		// For now, returning the error
 		return
 	}
-	databaseConfig.RDBMS.Conn.MaxOpenConns, err = strconv.Atoi(dbMaxOpenConns)
+	rdbmsConfig.Conn.MaxOpenConns, err = strconv.Atoi(dbMaxOpenConns)
 	if err != nil {
+		// Handle error or set a default
 		return
 	}
-	databaseConfig.RDBMS.Conn.ConnMaxLifetime, err = time.ParseDuration(dbConnMaxLifetime)
+	rdbmsConfig.Conn.ConnMaxLifetime, err = time.ParseDuration(dbConnMaxLifetime)
 	if err != nil {
+		// Handle error or set a default
 		return
 	}
 
 	// Logger
-	dbLogLevel := strings.TrimSpace(os.Getenv("DBLOGLEVEL"))
-	databaseConfig.RDBMS.Log.LogLevel, err = strconv.Atoi(dbLogLevel)
+	dbLogLevel := strings.TrimSpace(os.Getenv(prefix + "_DBLOGLEVEL"))
+	rdbmsConfig.Log.LogLevel, err = strconv.Atoi(dbLogLevel)
 	if err != nil {
+		// Handle error or set a default
 		return
 	}
+
+	return
+}
+
+// databaseRDBMS - This function is now replaced by loadRDBMSConfig and the logic in database()
+// func databaseRDBMS() (databaseConfig DatabaseConfig, err error) {
+// 	// This function is no longer needed in its original form
+// 	return
+// }
+
+
+func databaseBadger() (databaseConfig DatabaseConfig, err error) {
+	
+	databaseConfig.BadgerDB.Env.DataDir = strings.TrimSpace(os.Getenv("DataDir"))
+
+	return
+}
+
+func auth() (authConfig AuthConfig, err error) {
+	
+	authConfig.SessionSecret = strings.TrimSpace(os.Getenv("SESSION_SECRET"))
 
 	return
 }

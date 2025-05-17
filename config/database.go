@@ -7,13 +7,17 @@ import (
 // DatabaseConfig - all database variables
 type DatabaseConfig struct {
 	// relational database
-	RDBMS RDBMS
+	RDBMS map[string] RDBMSConfig // Use a map for multiple RDBMS instances
 
 	// redis database
 	REDIS REDIS
 
 	// mongo database
 	MongoDB MongoDB
+
+	BadgerDB BadgerDb
+
+	
 }
 
 // RDBMS - relational database variables
@@ -70,5 +74,12 @@ type MongoDB struct {
 		PoolSize uint64
 		PoolMon  string
 		ConnTTL  int
+	}
+}
+
+type BadgerDb struct {
+	Activate string
+	Env      struct {
+		DataDir  string
 	}
 }

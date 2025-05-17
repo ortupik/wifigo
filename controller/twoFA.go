@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/handler"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/lib/renderer"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/handler"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/lib/renderer"
+	"github.com/ortupik/wifigo/service"
 )
 
 // Setup2FA - get secret to activate 2FA

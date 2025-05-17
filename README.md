@@ -7,7 +7,7 @@
 ![Linter][08]
 [![Codecov][04]][05]
 [![Go Reference][14]][15]
-[![Go Report Card](https://goreportcard.com/badge/github.com/pilinux/gorest)][01]
+[![Go Report Card](https://goreportcard.com/badge/github.com/ortupik/wifigo)][01]
 [![CodeFactor](https://www.codefactor.io/repository/github/pilinux/gorest/badge)][06]
 [![codebeat badge](https://codebeat.co/badges/12c01a53-4745-4f90-ad2b-a95c94e4b432)][03]
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)][13]
@@ -31,7 +31,7 @@ under the [MIT license][13] and is free for any personal or commercial project.
 
 Version `1.6.x` contains breaking changes!
 
-_Note:_ For version `1.4.5` (obsolete): [v1.4.5](https://github.com/pilinux/gorest/tree/v1.4.5)
+_Note:_ For version `1.4.5` (obsolete): [v1.4.5](https://github.com/ortupik/wifigo/tree/v1.4.5)
 
 For all new projects, it is recommended to use version `1.9.x` or higher.
 
@@ -75,7 +75,7 @@ _Note:_ gorest uses [GORM][21] as its ORM
 - [x] logout (individually enable option - delete tokens from cookies, ban active tokens)
 - [x] rate limiting (IP-based)
 - [x] option to validate origin of the request
-- [x] super easy to learn and use - lots of example codes
+- [x] super easy to learn and use - lots of server codes
 
 ## Supported JWT signing algorithms
 
@@ -150,7 +150,7 @@ openssl genpkey -algorithm RSA -out private-key.pem -pkeyopt rsa_keygen_bits:409
 openssl rsa -in private-key.pem -pubout -out public-key.pem
 ```
 
-## Example docker compose file
+## server docker compose file
 
 ```yml
 # syntax=docker/dockerfile:1
@@ -177,7 +177,7 @@ and set the environment variables according to your own instance setup.
 
 _Tutorials:_
 
-For version `1.6.x`, please check the project in [example](example)
+For version `1.6.x`, please check the project in [server](server)
 
 For version `1.4.x` and `1.5.x`, [Wiki][10] (obsolete)
 
@@ -187,10 +187,10 @@ For version `1.4.x` and `1.5.x`, [Wiki][10] (obsolete)
 import (
   "github.com/gin-gonic/gin"
 
-  gconfig "github.com/pilinux/gorest/config"
-  gcontroller "github.com/pilinux/gorest/controller"
-  gdatabase "github.com/pilinux/gorest/database"
-  gmiddleware "github.com/pilinux/gorest/lib/middleware"
+  gconfig "github.com/ortupik/wifigo/config"
+  gcontroller "github.com/ortupik/wifigo/controller"
+  gdatabase "github.com/ortupik/wifigo/database"
+  gmiddleware "github.com/ortupik/wifigo/lib/middleware"
 )
 ```
 
@@ -199,7 +199,7 @@ import (
 - set up an environment to compile the Go codes (a [quick tutorial][41]
   for any Debian based OS)
 - install `git`
-- check the [Wiki][10] and [example](example) for tutorials and implementations
+- check the [Wiki][10] and [server](server) for tutorials and implementations
 
 _Note:_ For **MySQL** driver, please [check issue: 7][42]
 
@@ -261,25 +261,25 @@ Please see [this][62] document.
 
 Released under the [MIT license][13]
 
-[01]: https://goreportcard.com/report/github.com/pilinux/gorest
-[02]: https://github.com/pilinux/gorest/actions/workflows/codeql-analysis.yml/badge.svg
+[01]: https://goreportcard.com/report/github.com/ortupik/wifigo
+[02]: https://github.com/ortupik/wifigo/actions/workflows/codeql-analysis.yml/badge.svg
 [03]: https://codebeat.co/projects/github-com-pilinux-gorest-main
 [04]: https://codecov.io/gh/pilinux/gorest/branch/main/graph/badge.svg?token=xGLBRrCAvB
 [05]: https://codecov.io/gh/pilinux/gorest
 [06]: https://www.codefactor.io/repository/github/pilinux/gorest
-[07]: https://github.com/pilinux/gorest/actions/workflows/go.yml/badge.svg
-[08]: https://github.com/pilinux/gorest/actions/workflows/golangci-lint.yml/badge.svg
-[10]: https://github.com/pilinux/gorest/wiki
+[07]: https://github.com/ortupik/wifigo/actions/workflows/go.yml/badge.svg
+[08]: https://github.com/ortupik/wifigo/actions/workflows/golangci-lint.yml/badge.svg
+[10]: https://github.com/ortupik/wifigo/wiki
 [11]: https://github.com/golang/go
 [12]: https://github.com/gin-gonic/gin
 [13]: LICENSE
-[14]: https://pkg.go.dev/badge/github.com/pilinux/gorest
-[15]: https://pkg.go.dev/github.com/pilinux/gorest
+[14]: https://pkg.go.dev/badge/github.com/ortupik/wifigo
+[15]: https://pkg.go.dev/github.com/ortupik/wifigo
 [16]: https://github.com/golang-jwt/jwt
 [17]: https://sentry.io/
 [21]: https://gorm.io
 [41]: https://github.com/pilinux/HowtoCode/blob/master/Golang/1.Intro/Installation.md
-[42]: https://github.com/pilinux/gorest/issues/7
+[42]: https://github.com/ortupik/wifigo/issues/7
 [51]: https://github.com/joho/godotenv
 [61]: CONTRIBUTING.md
 [62]: CODE_OF_CONDUCT.md

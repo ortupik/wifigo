@@ -77,7 +77,7 @@ func IsTemplatingEngine() bool {
 
 // IsRDBMS returns true when RDBMS is enabled in .env
 func IsRDBMS() bool {
-	return GetConfig().Database.RDBMS.Activate == Activated
+	return GetConfig().Database.RDBMS[AppDB].Activate == Activated
 }
 
 // IsRedis returns true when Redis is enabled in .env
@@ -88,6 +88,11 @@ func IsRedis() bool {
 // IsMongo returns true when Mongo is enabled in .env
 func IsMongo() bool {
 	return GetConfig().Database.MongoDB.Activate == Activated
+}
+
+// IsMongo returns true when Mongo is enabled in .env
+func IsBadger() bool {
+	return GetConfig().Database.BadgerDB.Activate == Activated
 }
 
 // IsEmailService returns true when email service is enabled in .env

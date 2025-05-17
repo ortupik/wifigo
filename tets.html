@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WiFi Activation</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background-color: #f5f5f5;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .pending::before {
+      content: '⏳ ';
+      color: gray;
+    }
+    .success::before {
+      content: '✅ ';
+      color: green;
+    }
+    .failed::before {
+      content: '❌ ';
+      color: red;
+    }
+    .fallback {
+      margin-top: 1rem;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Activating Your WiFi</h1>
+
+  <ul id="statusList">
+    <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
+    <li id="accountStatus" class="pending status">Creating account...</li>
+    <li id="loginStatus" class="pending status">Waiting for automatic login...</li>
+  </ul>
+
+  <div id="fallbackMessage" class="fallback"></div>
+
+  <script>
+
+    const ip = "192.168.8.81"
+    const socket = new WebSocket("ws://127.0.0.1:8999/ws?ip=" + ip);
+
+    const paymentStatus = document.getElementById("paymentStatus");
+    const accountStatus = document.getElementById("accountStatus");
+    const loginStatus = document.getElementById("loginStatus");
+    const fallback = document.getElementById("fallbackMessage");
+
+    let paymentDone = false;
+    let loginDone = false;
+    let accountDone = false;
+
+
+    // Set login fallback timeout (after payment and account creation)
+    const loginTimeout = setTimeout(() => {
+      if (!loginDone && paymentDone && accountDone) {
+        loginStatus.className = 'failed status';
+        loginStatus.innerText = 'Automatic login timed out.';
+        fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+        loginDone = true;
+      }
+    }, 2000);
+
+    socket.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        console.log("WS Message:", msg);
+
+        if (msg.type === "payment" && !paymentDone) {
+          paymentDone = true;
+          if (msg.status === "success") {
+            paymentStatus.className = 'success status';
+            paymentStatus.innerText = "Payment successful.";
+          } else {
+            paymentStatus.className = 'failed status';
+            paymentStatus.innerText = "Payment failed: " + msg.message;
+          }
+        }
+
+        if (msg.type === "create_account" && !accountDone) {
+           accountDone = true;
+          if (msg.status === "success") {
+            accountStatus.className = 'success status';
+            accountStatus.innerText = "Account created successfully.";
+          } else {
+           
+            if(msg.message == "User already subscribed"){
+                paymentDone = true;
+                accountStatus.className = 'success status';
+                accountStatus.innerText = "Account exists.";
+                paymentStatus.className = 'success status';
+                paymentStatus.innerText = "Payment successful.";
+            }else{
+                accountStatus.className = 'failed status';
+                accountStatus.innerText = "Account creation failed: " + msg.message;
+            }
+          }
+        }
+
+        if (msg.type === "login" && !loginDone) {
+          loginDone = true;
+          clearTimeout(loginTimeout);
+          if (msg.status === "success") {
+            loginStatus.className = 'success status';
+            loginStatus.innerText = "Automatic login successful.";
+          } else {
+            loginStatus.className = 'failed status';
+            loginStatus.innerText = "Login failed: " + msg.message;
+            fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+          }
+        }
+
+      } catch (e) {
+        console.error("Invalid WS message:", event.data);
+      }
+    };
+  </script>
+
+</body>
+</html>

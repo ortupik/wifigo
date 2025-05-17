@@ -8,11 +8,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/handler"
-	"github.com/pilinux/gorest/lib/renderer"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/handler"
+	"github.com/ortupik/wifigo/lib/renderer"
+	"github.com/ortupik/wifigo/service"
 )
 
 // CreateUserAuth - register a new user account

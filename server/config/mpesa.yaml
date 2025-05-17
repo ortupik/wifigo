@@ -1,0 +1,12 @@
+mpesa:
+  short_code: "5478910"
+  till_no: "3192988"
+  consumer_key: "Aotjd7NVjiUNkCEtUfnAgj6rdV0VifO8KatoTdKYHahKpBpj"
+  consumer_secret: "iAG2k59iMxUoJgArrerwOYQ5XF5dHu6YGPvOmS6sljw1pM1OrDKhZ0gJnZqfsqNy"
+  passkey: "c83561410e903c0a9ce3fdf5f105c2c05351a8cf8291f6557a15db05b7660623"
+  initiator_name: "AMaina"
+  callback_url: "http://204.13.232.131/mpesa/callback.php"
+  environment: "live"
+  transaction_type: "CustomerBuyGoodsOnline"
+  account_reference: "TecSurf Hotspot"
+  transaction_desc: "Wifi Payment"

@@ -1,0 +1,272 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Nunito', sans-serif;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .card-header {
+            background-color: #292C58;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 1.3rem;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .price {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .price h2 {
+            font-weight: 600;
+            color: #292C58;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #292C58;
+            margin: 5px 0;
+        }
+
+        .price-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .mpesa-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+        }
+
+        .mpesa-logo {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            background-color: #292C58;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+        }
+
+        .instructions p {
+            margin-bottom: 8px;
+        }
+
+        .timer-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e53e3e;
+            background-color: #fff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background-color: #37b84a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #212244;
+        }
+
+        .btn-disabled {
+            background-color: #9ca3af;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            color: #e53e3e;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px 0;
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form name="payment" action="" method="POST">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Payment Confirmation</h1>
+                </div>
+                
+                <div class="card-body">
+                    <div class="price">
+                        <h2 class="price-details">You're purchasing</h2>
+                        <div class="price-amount">Ksh php echo $_SESSION['price']; </div>
+                        <p class="price-details">php echo $_SESSION["validity"];  Internet Package</p>
+                        
+                        php if(!empty($msg)): 
+                        <p class="status-message">php echo $msg; </p>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="mpesa-section">
+                        <img src="mpesa.png" alt="M-Pesa Logo" class="mpesa-logo">
+                        
+                        <div id="timer_div" class="timer-container">
+                            <p class="timer-label">Please wait</p>
+                            <div class="timer" id="timer">15</div>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <p>1. You will receive an M-Pesa prompt on your phone.</p>
+                        <p>2. Enter your M-Pesa PIN to complete payment.</p>
+                        <p>3. After receiving confirmation, click button below.</p>
+                    </div>
+                    
+                    <input type="hidden" name="phone_number" value="phoe" />
+                    <input type="hidden" name="orderNo" value="orderno" />
+                    
+                    <button id="confirmPayment" type="submit" class="btn btn-disabled">
+                        <i class="fas fa-lock"></i> Confirm Payment
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <div class="footer">
+            Copyright &copy; 2025 | All Rights Reserved | Made by Surf
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const confirmPayment = document.getElementById("confirmPayment");
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const timerDiv = document.getElementById("timer");
+            const timerContainer = document.getElementById("timer_div");
+            
+            confirmPayment.disabled = true;
+            
+            let timeLeft = 15;
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerDiv.innerHTML = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    confirmPayment.disabled = false;
+                    confirmPayment.classList.remove("btn-disabled");
+                    confirmPayment.classList.add("btn-primary");
+                    timerContainer.style.display = "none";
+                }
+            }, 1000);
+        });
+
+        confirmPayment.addEventListener("click", function(e) {
+            if (confirmPayment.disabled) {
+                e.preventDefault();
+                return;
+            }
+            
+            confirmPayment.classList.remove("btn-secondary");
+            confirmPayment.classList.add("btn-disabled");
+            confirmPayment.disabled = true;
+            confirmPayment.innerHTML = '<i class="fas fa-spinner loading-spinner"></i> Processing...'; 
+            document.payment.submit();
+        });
+    </script>
+</body>
+</html>

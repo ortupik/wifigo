@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 func TestEncryptDecrypt(t *testing.T) {

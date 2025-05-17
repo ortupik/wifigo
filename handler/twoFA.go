@@ -13,12 +13,12 @@ import (
 	"github.com/pilinux/crypt"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/service"
 )
 
 // Setup2FA handles jobs for controller.Setup2FA
@@ -47,7 +47,7 @@ func Setup2FA(claims middleware.MyCustomClaims, authPayload model.AuthPayload) (
 	}
 
 	// is 2FA disabled/never configured before
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	twoFA := model.TwoFA{}
 	// err == RecordNotFound => never configured before
 	// err == nil => 2FA disabled
@@ -269,7 +269,7 @@ func Activate2FA(claims middleware.MyCustomClaims, authPayload model.AuthPayload
 	}
 
 	// step 4: check DB
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	twoFA := model.TwoFA{}
 	available := false
 	err = db.Where("id_auth = ?", claims.AuthID).First(&twoFA).Error
@@ -493,7 +493,7 @@ func Validate2FA(claims middleware.MyCustomClaims, authPayload model.AuthPayload
 	}
 
 	// check DB
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	twoFA := model.TwoFA{}
 	// no record in DB!
 	if err := db.Where("id_auth = ?", claims.AuthID).First(&twoFA).Error; err != nil {
@@ -654,7 +654,7 @@ func Deactivate2FA(claims middleware.MyCustomClaims, authPayload model.AuthPaylo
 	}
 
 	// find user
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	v := model.Auth{}
 	if err := db.Where("auth_id = ?", claims.AuthID).First(&v).Error; err != nil {
 		if err.Error() != database.RecordNotFound {
@@ -802,7 +802,7 @@ func CreateBackup2FA(claims middleware.MyCustomClaims, authPayload model.AuthPay
 	}
 
 	// retrieve user auth
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	v := model.Auth{}
 	if err := db.Where("auth_id = ?", claims.AuthID).First(&v).Error; err != nil {
 		if err.Error() != database.RecordNotFound {
@@ -950,7 +950,7 @@ func ValidateBackup2FA(claims middleware.MyCustomClaims, authPayload model.AuthP
 	}
 
 	// retrieve existing 2FA backup codes
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	twoFABackup := []model.TwoFABackup{}
 
 	if err := db.Where("id_auth = ?", claims.AuthID).Find(&twoFABackup).Error; err != nil {

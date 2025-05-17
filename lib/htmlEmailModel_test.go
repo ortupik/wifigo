@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 func TestStrArrHTMLModel(t *testing.T) {

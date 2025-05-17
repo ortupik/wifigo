@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pilinux/gorest/lib/middleware"
+	"github.com/ortupik/wifigo/lib/middleware"
 )
 
 var customClaims middleware.MyCustomClaims
@@ -1141,7 +1141,7 @@ func setParamsJWT() {
 	middleware.JWTParams.Subject = "subject"
 
 	customClaims.AuthID = 123
-	customClaims.Email = "test@example.com"
+	customClaims.Email = "test@server.com"
 	customClaims.Role = "admin"
 	customClaims.Scope = "full_access"
 	customClaims.TwoFA = "on"

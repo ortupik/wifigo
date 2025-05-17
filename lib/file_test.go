@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 func TestFileExist(t *testing.T) {

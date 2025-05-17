@@ -10,8 +10,8 @@ import (
 	"github.com/mediocregopher/radix/v4"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
 )
 
 // IsTokenAllowed returns true when the token is not in the blacklist

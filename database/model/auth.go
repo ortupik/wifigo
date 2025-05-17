@@ -10,8 +10,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/lib"
 )
 
 // Email verification statuses

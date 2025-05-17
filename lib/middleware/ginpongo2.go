@@ -3,7 +3,7 @@ package middleware
 // github.com/ngerakines/ginpongo2
 // The MIT License (MIT)
 // Copyright (c) 2014 Nick Gerakines
-// github.com/pilinux/gorest
+// github.com/ortupik/wifigo
 // The MIT License (MIT)
 // Copyright (c) 2022 pilinux
 
@@ -19,7 +19,7 @@ import (
 // https://github.com/flosch/pongo2
 // to render templates
 //
-// Example: baseDirectory = "templates/"
+// server: baseDirectory = "templates/"
 func Pongo2(baseDirectory string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Automatic recovery from panic

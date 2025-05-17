@@ -6,7 +6,7 @@ import (
 
 	"github.com/pilinux/twofactor"
 
-	"github.com/pilinux/gorest/lib"
+	"github.com/ortupik/wifigo/lib"
 )
 
 type totpTest struct {

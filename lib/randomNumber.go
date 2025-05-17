@@ -8,7 +8,7 @@ import (
 
 // SecureRandomNumber generates cryptographically secure pseudo-random number.
 // To generate a random number consisting of x number of digits, pass x as
-// the parameter. For example, SecureRandomNumber(3) will generate a number
+// the parameter. For server, SecureRandomNumber(3) will generate a number
 // between 100 and 999
 func SecureRandomNumber(totalDigit uint64) uint64 {
 	if totalDigit == 0 {

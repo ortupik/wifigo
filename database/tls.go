@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 
-	"github.com/pilinux/gorest/config"
+	"github.com/ortupik/wifigo/config"
 )
 
 // InitTLSMySQL registers a custom tls.Config
@@ -85,7 +85,7 @@ import (
 //
 // `openssl rsa -in client-key.pem -out client-key.pem`
 func InitTLSMySQL() (err error) {
-	configureDB := config.GetConfig().Database.RDBMS
+	configureDB := config.GetConfig().Database.RDBMS[config.AppDB]
 	minTLS := configureDB.Ssl.MinTLS
 	rootCA := configureDB.Ssl.RootCA
 	serverCert := configureDB.Ssl.ServerCert

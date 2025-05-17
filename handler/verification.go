@@ -11,12 +11,12 @@ import (
 	"github.com/pilinux/argon2"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/pilinux/gorest/config"
-	"github.com/pilinux/gorest/database"
-	"github.com/pilinux/gorest/database/model"
-	"github.com/pilinux/gorest/lib"
-	"github.com/pilinux/gorest/lib/middleware"
-	"github.com/pilinux/gorest/service"
+	"github.com/ortupik/wifigo/config"
+	"github.com/ortupik/wifigo/database"
+	"github.com/ortupik/wifigo/database/model"
+	"github.com/ortupik/wifigo/lib"
+	"github.com/ortupik/wifigo/lib/middleware"
+	"github.com/ortupik/wifigo/service"
 )
 
 // VerifyEmail handles jobs for controller.VerifyEmail
@@ -74,7 +74,7 @@ func VerifyEmail(payload model.AuthPayload) (httpResponse model.HTTPResponse, ht
 	}
 
 	// update verification status in database
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	auth := model.Auth{}
 
 	// is data.value an email or hash of an email
@@ -263,7 +263,7 @@ func VerifyUpdatedEmail(payload model.AuthPayload) (httpResponse model.HTTPRespo
 	}
 
 	// update user email in database
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	auth := model.Auth{}
 	tempEmail := model.TempEmail{}
 
@@ -409,7 +409,7 @@ func GetUnverifiedEmail(claims middleware.MyCustomClaims) (httpResponse model.HT
 	}
 
 	// read DB
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	tempEmail := model.TempEmail{}
 
 	// check 'temp_emails'
@@ -470,7 +470,7 @@ func ResendVerificationCodeToModifyActiveEmail(claims middleware.MyCustomClaims)
 	}
 
 	// read DB
-	db := database.GetDB()
+	db := database.GetDB(config.AppDB)
 	tempEmail := model.TempEmail{}
 
 	// check 'temp_emails'

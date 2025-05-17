@@ -8,7 +8,7 @@
 // - Two-factor auth validator
 package middleware
 
-// github.com/pilinux/gorest
+// github.com/ortupik/wifigo
 // The MIT License (MIT)
 // Copyright (c) 2022 pilinux
 
