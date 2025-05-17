@@ -7,7 +7,7 @@ import (
 // ServicePlan - Defines the different service plans available
 type ServicePlan struct {
 	ID             int             `gorm:"primaryKey;autoIncrement;column:id"`
-	Name           string          `gorm:"uniqueIndex;column:name"`             // Name of the service plan
+	Name           string          `gorm:"uniqueIndex;type:varchar(255);column:name"`             // Name of the service plan
 	Description    *string         `gorm:"column:description"`                  // Nullable
 	Price          int             `gorm:"column:price"`     // Price of the plan
 	Duration       int             `gorm:"column:duration"`                     // Duration in seconds (not nullable)
