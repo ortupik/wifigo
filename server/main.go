@@ -113,10 +113,13 @@ func main() {
 		handleError(err, "Failed to add MikroTik device")
 	}
 
+	fmt.Println("NOT PASSED HERE 2")
+
 	wsHub := websocket.NewHub()
 	go wsHub.Run()
 
-	
+	fmt.Println("NOT PASSED HERE 3")
+
 
 	// Initialize handlers
 	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
@@ -125,6 +128,9 @@ func main() {
 		MikrotikHandler: *mikrotikHandler,
 		DatabaseHandler: *databaseHandler,
 	}
+
+	fmt.Println("NOT PASSED HERE 4")
+
 	// Initialize and start queue server in a goroutine
 	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, wsHub, handlers) // Pass handlers
 	if err != nil {
@@ -137,6 +143,9 @@ func main() {
 			log.Fatalf("Failed to start queue server: %v", err)
 		}
 	}()
+
+	fmt.Println("NOT PASSED HERE 5")
+
 
 	// Set up router with our dependencies
 	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, wsHub)
