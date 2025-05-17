@@ -17,7 +17,7 @@ import (
 	"github.com/ortupik/wifigo/queue"
 	"github.com/ortupik/wifigo/server/router"
 	"github.com/ortupik/wifigo/websocket"
-	migrate "github.com/ortupik/wifigo/server/database/migrate"
+	//migrate "github.com/ortupik/wifigo/server/database/migrate"
 )
 
 // handleError simplifies error handling by logging and exiting the program.
@@ -42,10 +42,10 @@ func main() {
 	if gconfig.IsRDBMS() {
 		handleError(gdatabase.InitDB(), "Failed to initialize RDBMS")
 		// Run migrations
-		handleError(migrate.DropAllTables(), "Failed to drop app migrations")
+		/*handleError(migrate.DropAllTables(), "Failed to drop app migrations")
 		handleError(migrate.DropRadiusTables(), "Failed to drop radius migrations")
 		handleError(migrate.StartMigration(*configure), "Failed to run app migrations")
-		handleError(migrate.MigrateRadiusModels(*configure), "Failed to run radius migrations")
+		handleError(migrate.MigrateRadiusModels(*configure), "Failed to run radius migrations")*/
 	}
 
 	if gconfig.IsRedis() {
