@@ -16,7 +16,7 @@ import (
 	"github.com/ortupik/wifigo/queue"
 	nconfig "github.com/ortupik/wifigo/server/config"
 	"github.com/ortupik/wifigo/server/router"
-	//"github.com/ortupik/wifigo/websocket"
+	"github.com/ortupik/wifigo/websocket"
 	//migrate "github.com/ortupik/wifigo/server/database/migrate"
 )
 
@@ -85,9 +85,11 @@ func main() {
 			handleError(err, "Failed to get device config")
 		}
 	} else {
-		existingDevice := deviceWrapper.DeviceConfig
-		log.Printf("Found existing device config: %+v", existingDevice)
+		//existingDevice := deviceWrapper.DeviceConfig
+		//log.Printf("Found existing device config: %+v", existingDevice)
 	}
+
+	fmt.Println("MikroTik manager initialized")
 
 	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
 	if currentDevice == nil {
@@ -95,10 +97,8 @@ func main() {
 		handleError(err, "Failed to add MikroTik device")
 	}
 
-	//wsHub := websocket.NewHub()
-	//go wsHub.Run()
-
-	fmt.Println("am here")
+	wsHub := websocket.NewHub()
+	go wsHub.Run()
 
 	// Redis address from config
 	redisAddr := configure.Database.REDIS.Env.Host + ":" + configure.Database.REDIS.Env.Port
@@ -115,14 +115,14 @@ func main() {
 	}()
 
 	// Initialize handlers
-	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, nil)
-	databaseHandler := queue.NewDatabaseHandler(nil)
+	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
+	databaseHandler := queue.NewDatabaseHandler(wsHub)
 	handlers := &queue.Handlers{
 		MikrotikHandler: *mikrotikHandler,
 		DatabaseHandler: *databaseHandler,
 	}
 	// Initialize and start queue server in a goroutine
-	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, nil, handlers) // Pass handlers
+	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, wsHub, handlers) // Pass handlers
 	if err != nil {
 		log.Fatalf("Failed to create queue server: %v", err)
 	}
@@ -135,7 +135,7 @@ func main() {
 	}()
 
 	// Set up router with our dependencies
-	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, nil)
+	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, wsHub)
 	handleError(err, "Failed to setup router")
 
 	// Set up graceful shutdown
