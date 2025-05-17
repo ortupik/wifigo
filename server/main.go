@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -91,9 +90,7 @@ func main() {
 
 	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
 	if currentDevice == nil {
-		fmt.Printf("error", err)
-		err = mikrotikManager.AddDevice(sampleDevice)
-		fmt.Printf("error2", err2)
+		err2 = mikrotikManager.AddDevice(sampleDevice)
 		handleError(err, "Failed to add MikroTik device")
 	}
 
