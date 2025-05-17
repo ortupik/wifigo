@@ -80,8 +80,8 @@ func (RadGroupReply) TableName() string {
 // It stores session accounting information.
 type RadAcct struct {
 	RadAcctID          int64      `gorm:"primaryKey;autoIncrement;column:radacctid"`
-	AcctSessionID      string     `gorm:"uniqueIndex;column:acctsessionid"`    // Unique session ID
-	AcctUniqueID       string     `gorm:"uniqueIndex;column:acctuniqueid"`     // Unique accounting request ID
+	AcctSessionID      string     `gorm:"uniqueIndex;type:varchar(255);column:acctsessionid"`    // Unique session ID
+	AcctUniqueID       string     `gorm:"uniqueIndex;type:varchar(255);column:acctuniqueid"`     // Unique accounting request ID
 	Username           string     `gorm:"column:username;index:username"`
 	Groupname          string     `gorm:"column:groupname"`
 	Realm              *string    `gorm:"column:realm"`                          // Nullable

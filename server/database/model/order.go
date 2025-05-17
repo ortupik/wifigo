@@ -25,7 +25,7 @@ type ServicePlan struct {
 // Order - Represents a user's order for a service plan
 type Order struct {
 	ID                int             `gorm:"primaryKey;autoIncrement;column:id"`
-	OrderNumber       string          `gorm:"uniqueIndex;column:orderNumber;index:orderNumber"` // Unique order identifier
+	OrderNumber       string          `gorm:"uniqueIndex;type:varchar(255);column:orderNumber;index:orderNumber"` // Unique order identifier
 	Status            string          `gorm:"column:status;index:status"`                      // Status of the order
 	Amount            int             `gorm:"column:amount"`                 // Total amount
 	Username          string          `gorm:"column:username;"`
