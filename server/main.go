@@ -107,11 +107,11 @@ func main() {
 
 	fmt.Println("NOT PASSED HERE")
 
-	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
+	/*currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
 	if currentDevice == nil {
 		err = mikrotikManager.AddDevice(sampleDevice)
 		handleError(err, "Failed to add MikroTik device")
-	}
+	}*/
 
 	fmt.Println("NOT PASSED HERE 2")
 
