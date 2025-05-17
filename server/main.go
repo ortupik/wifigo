@@ -85,11 +85,9 @@ func main() {
 			handleError(err, "Failed to get device config")
 		}
 	} else {
-		//existingDevice := deviceWrapper.DeviceConfig
-		//log.Printf("Found existing device config: %+v", existingDevice)
+		existingDevice := deviceWrapper.DeviceConfig
+		log.Printf("Found existing device config: %+v", existingDevice)
 	}
-
-	fmt.Println("MikroTik manager initialized")
 
 	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
 	if currentDevice == nil {
@@ -103,6 +101,8 @@ func main() {
 	// Redis address from config
 	redisAddr := configure.Database.REDIS.Env.Host + ":" + configure.Database.REDIS.Env.Port
 
+	fmt.Println("Redis address:", redisAddr)
+
 	// Initialize queue client
 	queueClient, err := queue.NewClient(redisAddr)
 	if err != nil {
@@ -113,6 +113,8 @@ func main() {
 			log.Printf("Error closing queue client: %v", err)
 		}
 	}()
+
+	fmt.Println("NOT PASSED HERE")
 
 	// Initialize handlers
 	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
