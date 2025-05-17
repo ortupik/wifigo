@@ -25,6 +25,8 @@ type clientRegistration struct {
 
 // NewHub initializes the WebSocket hub
 func NewHub() *Hub {
+
+	fmt.Println("HERE >> HUB")
 	return &Hub{
 		clients:    make(map[string]*websocket.Conn),
 		broadcast:  make(chan []byte),
@@ -35,6 +37,7 @@ func NewHub() *Hub {
 
 // Run starts the hub loop for handling registrations and messaging
 func (h *Hub) Run() {
+	fmt.Println("HERE >> RUN")
 	for {
 		select {
 		case reg := <-h.register:
@@ -62,14 +65,16 @@ func (h *Hub) Run() {
 
 // HandleWebSocket upgrades the HTTP request to a WebSocket and registers the client
 func (h *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HERE >> HANDLE WEBSOCKET")
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
 		return
 	}
+
 
 	// Extract client IP (preferred: query param `?ip=...`)
 	ip := r.URL.Query().Get("ip")

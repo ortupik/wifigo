@@ -116,6 +116,7 @@ func main() {
 	fmt.Println("NOT PASSED HERE 2")
 
 	wsHub := websocket.NewHub()
+	fmt.Println("NOT PASSED HERE 2.1")
 	go wsHub.Run()
 
 	fmt.Println("NOT PASSED HERE 3")
