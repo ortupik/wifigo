@@ -2,19 +2,19 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-
 	"github.com/ortupik/wifigo/badger"
 	gconfig "github.com/ortupik/wifigo/config"
-	nconfig "github.com/ortupik/wifigo/server/config"
 	gdatabase "github.com/ortupik/wifigo/database"
 	"github.com/ortupik/wifigo/mikrotik"
 	"github.com/ortupik/wifigo/queue"
+	nconfig "github.com/ortupik/wifigo/server/config"
 	"github.com/ortupik/wifigo/server/router"
 	"github.com/ortupik/wifigo/websocket"
 	//migrate "github.com/ortupik/wifigo/server/database/migrate"
@@ -96,7 +96,9 @@ func main() {
 	}
 
 	wsHub := websocket.NewHub()
-	go wsHub.Run()
+	//go wsHub.Run()
+
+	fmt.Println("am here")
 
 	// Redis address from config
 	redisAddr := configure.Database.REDIS.Env.Host + ":" + configure.Database.REDIS.Env.Port
