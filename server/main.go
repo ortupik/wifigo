@@ -89,15 +89,6 @@ func main() {
 		log.Printf("Found existing device config: %+v", existingDevice)
 	}
 
-	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
-	if currentDevice == nil {
-		err = mikrotikManager.AddDevice(sampleDevice)
-		handleError(err, "Failed to add MikroTik device")
-	}
-
-	wsHub := websocket.NewHub()
-	go wsHub.Run()
-
 	// Redis address from config
 	redisAddr := configure.Database.REDIS.Env.Host + ":" + configure.Database.REDIS.Env.Port
 
@@ -115,6 +106,17 @@ func main() {
 	}()
 
 	fmt.Println("NOT PASSED HERE")
+
+	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
+	if currentDevice == nil {
+		err = mikrotikManager.AddDevice(sampleDevice)
+		handleError(err, "Failed to add MikroTik device")
+	}
+
+	wsHub := websocket.NewHub()
+	go wsHub.Run()
+
+	
 
 	// Initialize handlers
 	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
