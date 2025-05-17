@@ -16,7 +16,7 @@ import (
 	"github.com/ortupik/wifigo/queue"
 	nconfig "github.com/ortupik/wifigo/server/config"
 	"github.com/ortupik/wifigo/server/router"
-	"github.com/ortupik/wifigo/websocket"
+	//"github.com/ortupik/wifigo/websocket"
 	//migrate "github.com/ortupik/wifigo/server/database/migrate"
 )
 
@@ -95,7 +95,7 @@ func main() {
 		handleError(err, "Failed to add MikroTik device")
 	}
 
-	wsHub := websocket.NewHub()
+	//wsHub := websocket.NewHub()
 	//go wsHub.Run()
 
 	fmt.Println("am here")
@@ -115,14 +115,14 @@ func main() {
 	}()
 
 	// Initialize handlers
-	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
-	databaseHandler := queue.NewDatabaseHandler(wsHub)
+	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, nil)
+	databaseHandler := queue.NewDatabaseHandler(nil)
 	handlers := &queue.Handlers{
 		MikrotikHandler: *mikrotikHandler,
 		DatabaseHandler: *databaseHandler,
 	}
 	// Initialize and start queue server in a goroutine
-	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, wsHub, handlers) // Pass handlers
+	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, nil, handlers) // Pass handlers
 	if err != nil {
 		log.Fatalf("Failed to create queue server: %v", err)
 	}
@@ -135,7 +135,7 @@ func main() {
 	}()
 
 	// Set up router with our dependencies
-	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, wsHub)
+	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, nil)
 	handleError(err, "Failed to setup router")
 
 	// Set up graceful shutdown
