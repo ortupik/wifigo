@@ -67,7 +67,7 @@ func main() {
 	sampleDevice := gconfig.DeviceConfig{
 		ID:          "mikrotik1",
 		Name:        "Office Router",
-		Address:     "192.168.3.1:8728",
+		Address:     "192.168.6.1:8728",
 		Username:    "admin",
 		Password:    "12345678",
 		PoolSize:    5,
@@ -89,10 +89,19 @@ func main() {
 		log.Printf("Found existing device config: %+v", existingDevice)
 	}
 
+	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
+	if currentDevice == nil {
+		fmt.Printf("error", err)
+		err = mikrotikManager.AddDevice(sampleDevice)
+		fmt.Printf("error2", err2)
+		handleError(err, "Failed to add MikroTik device")
+	}
+
+	wsHub := websocket.NewHub()
+	go wsHub.Run()
+
 	// Redis address from config
 	redisAddr := configure.Database.REDIS.Env.Host + ":" + configure.Database.REDIS.Env.Port
-
-	fmt.Println("Redis address:", redisAddr)
 
 	// Initialize queue client
 	queueClient, err := queue.NewClient(redisAddr)
@@ -105,23 +114,6 @@ func main() {
 		}
 	}()
 
-	fmt.Println("NOT PASSED HERE")
-
-	/*currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
-	if currentDevice == nil {
-		err = mikrotikManager.AddDevice(sampleDevice)
-		handleError(err, "Failed to add MikroTik device")
-	}*/
-
-	fmt.Println("NOT PASSED HERE 2")
-
-	wsHub := websocket.NewHub()
-	fmt.Println("NOT PASSED HERE 2.1")
-	go wsHub.Run()
-
-	fmt.Println("NOT PASSED HERE 3")
-
-
 	// Initialize handlers
 	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
 	databaseHandler := queue.NewDatabaseHandler(wsHub)
@@ -129,9 +121,6 @@ func main() {
 		MikrotikHandler: *mikrotikHandler,
 		DatabaseHandler: *databaseHandler,
 	}
-
-	fmt.Println("NOT PASSED HERE 4")
-
 	// Initialize and start queue server in a goroutine
 	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, wsHub, handlers) // Pass handlers
 	if err != nil {
@@ -144,9 +133,6 @@ func main() {
 			log.Fatalf("Failed to start queue server: %v", err)
 		}
 	}()
-
-	fmt.Println("NOT PASSED HERE 5")
-
 
 	// Set up router with our dependencies
 	r, err := router.SetupRouter(configure, store, mikrotikManager, queueClient, wsHub)
