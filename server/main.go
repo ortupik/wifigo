@@ -77,7 +77,7 @@ func main() {
 
 	var deviceWrapper badger.DeviceConfigWrapper
 	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
-	if err != nil {
+	if err == nil {
 		if err.Error() == "device config not found: mikrotik1" {
 			err = store.SaveConfig(badger.DeviceConfigWrapper{DeviceConfig: sampleDevice})
 			handleError(err, "Failed to save sample device config")
