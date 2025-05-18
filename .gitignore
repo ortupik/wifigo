@@ -4,7 +4,7 @@
 *.bak
 .env
 data/*
-data/badger/*
+config/*.yaml
 vendor/
 crosscompile*.sh
 gorest
