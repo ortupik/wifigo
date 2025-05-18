@@ -1,0 +1,29 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main  # Or your main branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use a GitHub-hosted Ubuntu runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-action@v1
+        with:
+          ssh_private_key: ${{ secrets.VPS_SSH_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }} #optional, default is 22
+          username: ${{ secrets.VPS_USER }}
+
+      - name: Execute deployment script
+        run: |
+          set -e
+          # Ensure the script is executable (if it isn't already)
+          chmod +x /tmp/deploy.sh
+          /tmp/deploy.sh
