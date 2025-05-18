@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -24,11 +25,12 @@ func handleError(err error, message string) {
 	if err != nil {
 		log.Fatalf("%s: %v", message, err)
 	}
-	
+
 }
 
 func main() {
 	// Set configs
+	fmt.Println("github workflow is great!")
 	err := gconfig.Config()
 	handleError(err, "Failed to load configuration")
 
