@@ -3,8 +3,8 @@
 *.log
 *.bak
 .env
-# data/*
-# data/badger/*
+data/*
+data/badger/*
 vendor/
 crosscompile*.sh
 gorest
