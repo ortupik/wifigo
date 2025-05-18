@@ -1,4 +1,3 @@
-// Package migrate to handle database schema migrations
 package migrate
 
 import (
@@ -7,14 +6,15 @@ import (
 	"github.com/ortupik/wifigo/config"
 	gconfig "github.com/ortupik/wifigo/config"
 	gdatabase "github.com/ortupik/wifigo/database"
-	radiusmodel"github.com/ortupik/wifigo/server/database/model"
+	radiusmodel "github.com/ortupik/wifigo/server/database/model" // Correct import alias
+	"gorm.io/gorm"
 )
 
 // MigrateRadiusModels automatically migrates only the FreeRADIUS related tables.
 //
 // - Only creates tables or columns if they are missing.
 // - Does not change/delete existing columns or their types.
-func MigrateRadiusModels( configure gconfig.Configuration) error {
+func MigrateRadiusModels(configure gconfig.Configuration) error {
 	fmt.Println("Starting migration for RADIUS models...")
 
 	db := gdatabase.GetDB(config.RadiusDB)
@@ -75,5 +75,124 @@ func DropRadiusTables() error {
 	}
 
 	fmt.Println("RADIUS tables dropped successfully!")
+	return nil
+}
+
+// SeedRadiusData seeds the FreeRADIUS database with initial data.
+func SeedRadiusData() error {
+	db := gdatabase.GetDB(config.RadiusDB)
+
+	// Define the radgroupreply data.
+	groupReplies := []radiusmodel.RadGroupReply{
+		// 20 mins
+		{Groupname: "min40@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "1200"},
+		{Groupname: "min40@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "min40@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 2 hours
+		{Groupname: "quickHour@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "7200"},
+		{Groupname: "quickHour@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "quickHour@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 6 hours
+		{Groupname: "hour6@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "21600"},
+		{Groupname: "hour6@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "hour6@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 12 hours
+		{Groupname: "hour8@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "43200"},
+		{Groupname: "hour8@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "hour8@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 1 day
+		{Groupname: "daily@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "86400"},
+		{Groupname: "daily@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "daily@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 3 days
+		{Groupname: "daily3@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "259200"},
+		{Groupname: "daily3@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "daily3@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 1 week
+		{Groupname: "weekly@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "604800"},
+		{Groupname: "weekly@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "weekly@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// 1 month
+		{Groupname: "monthly@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthly@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthly@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+
+		// Home Wifi groups
+		// Daily Home (5 Devices)
+		{Groupname: "dailyHome@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "86400"},
+		{Groupname: "dailyHome@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "dailyHome@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 5"},
+
+		// 3 Days
+		{Groupname: "daily3Home@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "259200"},
+		{Groupname: "daily3Home@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "daily3Home@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 5"},
+
+		// Weekly
+		{Groupname: "weeklyHome@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "604800"},
+		{Groupname: "weeklyHome@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "weeklyHome@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 5"},
+
+		// Monthly Home 700 (2 Devices)
+		{Groupname: "monthlyHome700@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthlyHome700@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthlyHome700@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 2"},
+
+		// Monthly Home 1000 (5 Devices)
+		{Groupname: "monthlyHome1000@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthlyHome1000@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthlyHome1000@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 5"},
+
+		// 5 Mbps
+		{Groupname: "monthlyHome5@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthlyHome5@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthlyHome5@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "5120k/5120k 5120k/5120k"},
+
+		// 10 Mbps
+		{Groupname: "monthlyHome10@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthlyHome10@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthlyHome10@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "10240k/10240k 10240k/10240k"},
+
+		// 20 Mbps
+		{Groupname: "monthlyHome20@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "2592000"},
+		{Groupname: "monthlyHome20@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "monthlyHome20@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "20480k/20480k 20480k/20480k"},
+	}
+
+	// Loop through the group replies and create them if they don't exist.
+	for _, gr := range groupReplies {
+		var existingGR radiusmodel.RadGroupReply
+		if err := db.Where("GroupName = ? AND Attribute = ?", gr.Groupname, gr.Attribute).First(&existingGR).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				if err := db.Create(&gr).Error; err != nil {
+					return fmt.Errorf("failed to create radgroupreply: %w", err)
+				}
+				fmt.Printf("RadGroupReply created for GroupName '%s', Attribute '%s'\n", gr.Groupname, gr.Attribute)
+			} else {
+				return fmt.Errorf("failed to query existing radgroupreply: %w", err)
+			}
+		} else {
+			fmt.Printf("RadGroupReply already exists for GroupName '%s', Attribute '%s'\n", gr.Groupname, gr.Attribute)
+		}
+	}
+
+	return nil
+}
+
+// RunRadiusMigrations - runs FreeRADIUS migrations and seeders.
+func RunRadiusMigrations(configure gconfig.Configuration) error {
+	if err := MigrateRadiusModels(configure); err != nil {
+		return err
+	}
+	if err := SeedRadiusData(); err != nil {
+		return err
+	}
 	return nil
 }

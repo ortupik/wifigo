@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,7 +13,6 @@ import (
 
 // GetOrder retrieves an order based on input
 func GetOrder(orderNumber string, c *gin.Context, tx *gorm.DB) {
-	fmt.Println(orderNumber)
 	db := gdatabase.GetDB(config.AppDB)
 	var order model.Order
 	if err := db.Where("orderNumber = ?", orderNumber).First(&order).Error; err != nil {

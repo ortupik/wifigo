@@ -42,7 +42,11 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		return
 	}
 
-	amount := int(math.Round(float64(plan.Price) * float64(req.DeviceCount) * 1.7))
+    amount := plan.Price 
+
+	if req.DeviceCount > 2 {
+		amount = int(math.Round(float64(amount) * 0.7)) // Apply 30% discount
+	}
 
 	res, err := mc.mpesaHandler.SendStkPush(req.Phone, fmt.Sprintf("%d", amount))
 	if err != nil {
@@ -59,18 +63,21 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		return
 	}
 
+	username := req.Phone + "@Tecsurf"
+	isHomeUser := false
+
 	order := model.Order{
 		OrderNumber:       fmt.Sprintf("ORD-%d", time.Now().UnixNano()),
 		Status:            "PENDING",
 		Amount:            amount,
-		Username:          req.Username,
+		Username:          username,
 		Ip:                req.Ip,
 		Mac:               req.Mac,
 		Phone:             req.Phone,
 		ISP:               req.IspID,
 		Zone:              req.Zone,
 		DeviceID:          req.DeviceID,
-		IsHomeUser:        req.IsHomeUser,
+		IsHomeUser:        isHomeUser,
 		Devices:           req.DeviceCount,
 		ServicePlanID:     plan.ID,
 		ResultDesc:        fmt.Sprint(res["ResponseDescription"]),

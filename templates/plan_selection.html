@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP Plan Selection</title>
+    <link rel="stylesheet" href="/static/css/pay.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="payment-card">
+            <div class="header">
+                <h1><i class="fas fa-wifi"></i> {{ .ISP.Name }} WiFi Plans</h1>
+            </div>
+            
+            <div class="content">
+                <div class="step-indicator">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Select Plan</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Connect</div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Choose Your Plan</h2>
+                
+                <div class="plans-container">
+                    {{ range $id, $plan := .ISP.Plans }}
+                    <a href="/checkout?isp_id={{ $.ISP.ID }}&plan_id={{ $plan.ID }}" class="plan-card">
+                        <div class="plan-name">{{ $plan.Name }}</div>
+                        <div class="plan-price">KES {{ $plan.Price }}</div>
+                        <div class="plan-details">
+                            <div class="plan-feature">
+                                <i class="fas fa-clock"></i> 
+                                <span>{{ $plan.Validity }}</span>
+                            </div>
+                            <div class="plan-feature">
+                                <i class="fas fa-tachometer-alt"></i> 
+                                <span>{{ $plan.Speed }}</span>
+                            </div>
+                        </div>
+                        <div class="plan-select">
+                            Select <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-logo">
+                <i class="fas fa-wifi"></i> {{ .ISP.Name }}
+            </div>
+            <div class="footer-text">
+                © 2025 {{ .ISP.Name }} | All Rights Reserved
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,7 +13,7 @@ type Payment struct {
 	MpesaReceiptNumber *string         `gorm:"column:MpesaReceiptNumber;index:mpesaReceiptNumber"` // Nullable
 	Phone              *string         `gorm:"column:Phone;index:phone"`                           // Nullable
 	TransactionDate    string          `gorm:"column:TransactionDate;"`       // Nullable, keeping as string to match DESCRIBE
-	MerchantRequestID  *string         `gorm:"column:MerchantRequestID;index:merchantRequestID"`   // Nullable
+	MerchantRequestID  *string         `gorm:"column:MerchantRequestID;"`   // Nullable
 	CheckoutRequestID  string          `gorm:"column:CheckoutRequestID;index:checkoutRequestID;not null"`
 	ResultCode         int             `gorm:"column:ResultCode;default:0;not null"`
 	ResultDesc         string          `gorm:"type:text;column:ResultDesc;not null"`

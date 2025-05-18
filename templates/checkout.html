@@ -1,170 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hotspot Payment</title>
-  <style>
-    :root {
-      --primary: #292C58;
-      --accent: #37b84a;
-      --bg: #f8fafc;
-      --border: #e2e8f0;
-      --radius: 8px;
-    }
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: var(--bg);
-      color: #333;
-    }
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-    .card {
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-    .card-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 16px;
-      text-align: center;
-    }
-    .card-body {
-      padding: 16px;
-    }
-    .product-name {
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
-    .product-info {
-      font-size: 1rem;
-      color: darkorange;
-      margin-bottom: 16px;
-    }
-    .price-summary {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-top: 1px solid var(--border);
-    }
-    input[type="tel"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin: 16px 0;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      background: var(--accent);
-      color: white;
-      padding: 12px;
-      border: none;
-      font-weight: bold;
-      border-radius: var(--radius);
-      cursor: pointer;
-    }
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    .note {
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 12px;
-    }
-    .alert {
-      padding: 10px;
-      border-radius: var(--radius);
-      margin-bottom: 16px;
-      font-size: 0.9rem;
-    }
-    .alert-error { background: #fee2e2; color: #b91c1c; }
-    .alert-success { background: #dcfce7; color: #166534; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecSurf Payment</title>
+    <link rel="stylesheet" href="/static/css/checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <h2>Hotspot Payment</h2>
-      </div>
-      <div class="card-body">
-        <div id="planInfo">
-          <div class="product-name">Plan: <span id="plan-name">Standard</span></div>
-          <div class="product-info">
-            Valid: <span id="plan-validity">1 Day</span>,
-            Devices: <span id="plan-devices">1</span>
-          </div>
+    <div class="container">
+        <div class="payment-card">
+            <div class="header">
+                <h1><i class="fas fa-wifi"></i> {{ .ISP.Name }} Hotspot Payment</h1>
+            </div>
+            
+            <div class="content">
+               
+                <form id="checkoutForm" method="POST">
+                    <!-- Product section -->
+                    <div class="product">
+                        <div class="product-details">
+                            <div class="product-name">WiFi {{ .ServicePlan.ServiceType }} plan</div>
+                            <div class="product-info">
+                                <span id="validity"> {{ .ServicePlan.Validity }}</span>
+                                <span id="speed">{{ .ServicePlan.Speed }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Device selector -->
+                    <div class="form-group">
+                        <label for="quantity">Number of devices:</label>
+                        <div class="devices-control">
+                            <button type="button" class="devices-btn" id="decrease-btn">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" name="quantity" class="devices-input" value="1" min="1" max="10" readonly>
+                            <button type="button" class="devices-btn" id="increase-btn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Price calculation -->
+                    <div class="price-summary">
+                      <div class="price-row">
+                          <div class="price-label">Price (per device):</div>
+                          <div id="unit-price" class="price-amount">KES {{ .ServicePlan.Price }}</div>
+                      </div>
+                  
+                      <div class="price-row">
+                          <div class="price-label">Calculation:</div>
+                          <div id="price-calculation" class="price-calculation">1 × KES {{ .ServicePlan.Price }}</div>
+                      </div>
+                  
+                      <div class="price-row discount" id="discount-row" style="display:none;">
+                          <div class="price-label">Discount (30%)</div>
+                          <div id="discount-amount" class="price-amount">-KES 0.00</div>
+                      </div>
+                  
+                      <div class="total-row">
+                          <div class="total-label">Total Amount</div>
+                          <div id="total" class="total-amount">KES {{ .ServicePlan.Price }}</div>
+                      </div>
+                  </div>
+                    
+                    <!-- Payment section -->
+                    <div class="payment-method">                        
+                        <div class="payment-logo">
+                            <img src="/static/images/mpesa.png" alt="M-Pesa">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <div class="input-with-icon">
+                                <input id="phone" type="tel" name="phone" maxlength="10" placeholder="e.g 0710000000" required />
+                            </div>
+                            <small class="form-hint">Enter the M-Pesa number to receive payment prompt</small>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="info-text">
+                                You'll receive an M-PESA prompt on your phone. Enter your PIN to complete payment.
+                            </div>
+                        </div>
+                        
+                        <div id="alert-container"></div>
+
+                        <input type="hidden" name="isp_id" id="isp_id" value="{{.ISP.ID}}" />
+                        <input type="hidden" name="plan_id" id="plan_id" value="{{.ServicePlan.ID}}" />
+                        <input type="hidden" name="total_amount" id="total_amount" value="{{.ServicePlan.Price}}" />
+                        <input type="hidden" name="devices" id="devices" value="1" />
+                        <input type="hidden" name="zone" id="zone" value="{{.Zone}}"/>
+                        <input type="hidden" name="dns_name" id="dns_name" value="{{.DnsName}}"/>
+                        <input type="hidden" name="ip" id="ip" value="{{.Ip}}"/>
+                        <input type="hidden" name="mac" id="mac" value="{{.Mac}}"/>
+                        <input type="hidden" name="device_id" id="device_id" value="{{.DeviceId}}"/>
+                        
+                        
+                        <button id="payButton" type="submit" class="pay-btn">
+                            <span>Pay Now</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <div class="price-summary">
-          <div>Total</div>
-          <div id="plan-price">KES 20</div>
+        
+        <div class="footer">
+            <div class="footer-logo">
+                <i class="fas fa-wifi"></i> {{ .ISP.Name }}
+            </div>
+            <div class="footer-text">
+                © 2025 {{ .ISP.Name }} | All Rights Reserved
+            </div>
         </div>
-
-        <div class="note">Enter your phone number to receive the STK push.</div>
-
-        <form id="payForm">
-          <input type="tel" name="phone" id="phone" placeholder="e.g. 07XXXXXXXX" required />
-          <button type="submit" id="payBtn">Pay with M-Pesa</button>
-        </form>
-
-        <div class="alert alert-error" id="errorMsg" style="display: none;"></div>
-        <div class="alert alert-success" id="successMsg" style="display: none;"></div>
-      </div>
     </div>
-  </div>
 
-  <script>
-    const payForm = document.getElementById("payForm");
-    const phoneInput = document.getElementById("phone");
-    const payBtn = document.getElementById("payBtn");
-    const errorMsg = document.getElementById("errorMsg");
-    const successMsg = document.getElementById("successMsg");
-
-    payForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      payBtn.disabled = true;
-      errorMsg.style.display = "none";
-      successMsg.style.display = "none";
-
-      const phone = phoneInput.value.trim();
-      if (!/^07\d{8}$/.test(phone)) {
-        errorMsg.textContent = "Invalid phone number. Use format 07XXXXXXXX.";
-        errorMsg.style.display = "block";
-        payBtn.disabled = false;
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/v1/mpesa/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, planId: "standard" }) // You can replace with dynamic planId
-        });
-        const data = await res.json();
-        if (res.ok) {
-          successMsg.textContent = "STK push sent. Check your phone!";
-          successMsg.style.display = "block";
-        } else {
-          throw new Error(data.error || "Payment failed.");
-        }
-      } catch (err) {
-        errorMsg.textContent = err.message;
-        errorMsg.style.display = "block";
-      } finally {
-        payBtn.disabled = false;
-      }
-    });
-  </script>
+    <script src="/static/js/checkout.js"></script>
 </body>
 </html>

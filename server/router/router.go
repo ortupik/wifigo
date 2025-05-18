@@ -1,7 +1,6 @@
 package router
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 
 	gconfig "github.com/ortupik/wifigo/config"
@@ -44,9 +43,24 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	// Load HTML templates
 	r.LoadHTMLGlob("templates/*.html")
 
-    r.GET("/login", ShowLoginPage)
-	r.GET("/checkout", ShowCheckoutPage)
-	r.GET("/confirm", ShowConfirmPage)
+	r.GET("/checkout", controller.CheckoutController)
+	r.GET("/confirm", controller.ConfirmController)
+	r.POST("/plan_selection", func(c *gin.Context) {
+		// In a real application, this would handle payment processing
+		// For now, we'll just redirect to a success page
+		
+		c.HTML(200, "plan_selection.html", gin.H{
+			"title": "Payment Successful",
+		})
+	})
+	r.GET("/process-payment", func(c *gin.Context) {
+		// In a real application, this would handle payment processing
+		// For now, we'll just redirect to a success page
+		
+		c.HTML(200, "payment_success.html", gin.H{
+			"title": "Payment Successful",
+		})
+	})
 
 
 	// Setup session middleware
@@ -353,15 +367,3 @@ func registerBasicAuthRoutes(v1 *gin.RouterGroup, configure *gconfig.Configurati
 	}
 }
 
-func ShowCheckoutPage(c *gin.Context) {
-	plan := "myo" 
-    c.HTML(http.StatusOK, "checkout.html", plan)
-}
-func ShowConfirmPage(c *gin.Context) {
-	plan := "myo" 
-    c.HTML(http.StatusOK, "confirm.html", plan)
-}
-func ShowLoginPage(c *gin.Context) {
-	plan := "myo" 
-    c.HTML(http.StatusOK, "login.html", plan)
-}

@@ -2,6 +2,7 @@
 #################################
 *.log
 *.bak
+.env
 vendor/
 crosscompile*.sh
 gorest

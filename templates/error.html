@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f7fafc; /* Light background */
+            color: #1a202c; /* Dark text */
+            margin: 0;
+            padding: 20px;
+        }
+        .error-container {
+            background-color: #fff;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow */
+            padding: 2rem;
+            text-align: center;
+            max-width: 80%;
+            width: 400px; /* Increased width */
+        }
+        h1 {
+            font-size: 1.875rem; /* Larger heading */
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 1rem;
+            color: #e53e3e; /* Red color for error */
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.5rem;
+            margin-bottom: 1.5rem; /* Increased margin */
+            color: #4a5568; /* Gray text */
+        }
+        a {
+            color: #3182ce; /* Blue link color */
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        a:hover {
+            color: #2b6cb0; /* Darker blue on hover */
+        }
+        .error-code {
+            font-size: 3rem; /* Large error code */
+            font-weight: 700; /* Bold */
+            color: #e53e3e;
+            margin-bottom: 1rem;
+            letter-spacing: -0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">{{ .Status }}</div>
+        <h1>{{ .Title }}</h1>
+        <p>{{ .Message }}</p>
+        <a href="/">Go back to the homepage</a>
+    </div>
+</body>
+</html>
