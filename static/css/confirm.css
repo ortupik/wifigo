@@ -1,0 +1,308 @@
+
+:root {
+    --primary: #292C58;
+    --primary-light: #3a3e78;
+    --accent: #27ae60;
+    --accent-hover: #219955;
+    --secondary: #292C58;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #333333;
+    --text-light: #666666;
+    --text-muted: #888888;
+    --border: #e2e8f0;
+    --border-light: #f0f4f8;
+    --danger: #e53e3e;
+    --success: #38a169;
+    --radius: 10px;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --transition: all 0.2s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.payment-card {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+    transition: var(--transition);
+    width: 100%;
+    max-width: 500px;
+}
+
+.payment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header h1 i {
+    margin-right: 10px;
+    color: var(--accent);
+}
+
+main {
+    padding: 1rem 2rem 2rem 2rem;
+}
+
+#statusList {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+#statusList li {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background-color: #f7fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, opacity 0.5s ease;
+    opacity: 0.6;
+}
+
+#statusList li.status {
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#statusList li.active {
+    color: var(--accent);
+    opacity: 1;
+    transform: scale(1.02);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.pending::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #f59e0b;
+    margin-right: 1rem;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.success::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 600;
+    color: var(--success);
+    margin-right: 1rem;
+    display: inline-block;
+    font-size: 1rem;
+}
+
+.failed::before {
+    content: '\f00d';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 600;
+    color: var(--danger);
+    margin-right: 1rem;
+    display: inline-block;
+    font-size: 1rem;
+}
+
+#fallbackMessage {
+    margin-top: 2rem;
+    color: var(--danger);
+    font-size: 1rem;
+    text-align: center;
+}
+
+#fallbackMessage a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    background-color: #f0f7ff;
+    border-radius: 4px;
+    display: inline-block;
+    transition: var(--transition);
+}
+
+#fallbackMessage a:hover {
+    background-color: #dbeafe;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* Timer styles */
+.timer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.timer-message {
+    font-weight: 600;
+    color: var(--success);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.timer-circle {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 10px 0;
+}
+
+.timer-circle svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-circle circle {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+}
+
+.timer-bg {
+    stroke: #e2e8f0;
+}
+
+.timer-progress {
+    stroke: var(--accent);
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+.timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.timer-redirect-url {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-top: 5px;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Specific styling for each status */
+#paymentStatus.pending::before { background-color: #f59e0b; }
+#paymentStatus.success::before { color: #10b981; }
+#paymentStatus.failed::before { color: #ef4444; }
+
+#accountStatus.pending::before { background-color: #f59e0b; }
+#accountStatus.success::before { color: #10b981; }
+#accountStatus.failed::before { color: #ef4444; }
+
+#loginStatus.pending::before { background-color: #f59e0b; }
+#loginStatus.success::before { color: #10b981; }
+#loginStatus.failed::before { color: #ef4444; }
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--text-muted);
+}
+
+.footer-logo {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--primary);
+}
+
+.footer-text {
+    font-size: 0.9rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.payment-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Progress bar */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 3px;
+    margin: 0 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 33.33%;
+    background-color: var(--accent);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}

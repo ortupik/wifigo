@@ -6,265 +6,27 @@
     <title>WiFi Activation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #292C58;
-            --primary-light: #3a3e78;
-            --accent: #27ae60;
-            --accent-hover: #219955;
-            --secondary: #292C58;
-            --bg: #f0f4f8;
-            --card: #ffffff;
-            --text: #333333;
-            --text-light: #666666;
-            --text-muted: #888888;
-            --border: #e2e8f0;
-            --border-light: #f0f4f8;
-            --danger: #e53e3e;
-            --success: #38a169;
-            --radius: 10px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            --transition: all 0.2s ease;
-        }
+    <link rel="stylesheet" href="/static/css/confirm.css">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect_url');
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 500px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .payment-card {
-            background-color: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 20px;
-            position: relative;
-            transition: var(--transition);
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .payment-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
-        }
-
-        .header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 0;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header h1 i {
-            margin-right: 10px;
-            color: var(--accent);
-        }
-
-        main {
-            padding: 2rem;
-        }
-
-        #statusList {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 2rem;
-        }
-
-        #statusList li {
-            display: flex;
-            align-items: center;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            background-color: #f7fafc;
-            border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, opacity 0.5s ease;
-            opacity: 0.6;
-        }
-
-        #statusList li.status {
-            font-weight: 500;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        #statusList li.active {
-            color: var(--accent);
-            opacity: 1;
-            transform: scale(1.02);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .pending::before {
-            content: '';
-            width: 1rem;
-            height: 1rem;
-            border-radius: 50%;
-            background-color: #f59e0b;
-            margin-right: 1rem;
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .success::before {
-            content: '\f00c';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 600;
-            color: var(--success);
-            margin-right: 1rem;
-            display: inline-block;
-            font-size: 1rem;
-        }
-
-        .failed::before {
-            content: '\f00d';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 600;
-            color: var(--danger);
-            margin-right: 1rem;
-            display: inline-block;
-            font-size: 1rem;
-        }
-
-        #fallbackMessage {
-            margin-top: 2rem;
-            color: var(--danger);
-            font-size: 1rem;
-            text-align: center;
-        }
-        
-        #fallbackMessage a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 16px;
-            background-color: #f0f7ff;
-            border-radius: 4px;
-            display: inline-block;
-            transition: var(--transition);
-        }
-        
-        #fallbackMessage a:hover {
-            background-color: #dbeafe;
-            text-decoration: none;
-            transform: translateY(-2px);
-        }
-
-        /* Specific styling for each status */
-        #paymentStatus.pending::before { background-color: #f59e0b; }
-        #paymentStatus.success::before { color: #10b981; }
-        #paymentStatus.failed::before { color: #ef4444; }
-
-        #accountStatus.pending::before { background-color: #f59e0b; }
-        #accountStatus.success::before { color: #10b981; }
-        #accountStatus.failed::before { color: #ef4444; }
-
-        #loginStatus.pending::before { background-color: #f59e0b; }
-        #loginStatus.success::before { color: #10b981; }
-        #loginStatus.failed::before { color: #ef4444; }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--text-muted);
-        }
-
-        .footer-logo {
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .footer-text {
-            font-size: 0.9rem;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .payment-card {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        /* Progress bar */
-        .progress-container {
-            width: 100%;
-            height: 6px;
-            background-color: #e2e8f0;
-            border-radius: 3px;
-            margin: 1.5rem 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 33.33%;
-            background-color: var(--accent);
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-    </style>
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="payment-card">
             <div class="header">
-                <h1><i class="fas fa-wifi"></i> Tecsurf Hotspot Payment</h1>
+                <h3><i class="fas fa-wifi"></i> Tecsurf Hotspot Payment</h3>
             </div>
             <main>
                 <div class="progress-container">
                     <div id="progressBar" class="progress-bar"></div>
                 </div>
                 <ul id="statusList">
-                    <li id="paymentStatus" class="pending status active">Waiting for payment confirmation...</li>
+                    <li id="paymentStatus" class="pending status active">Confirming Payment...</li>
                     <li id="accountStatus" class="pending status" style="display: none;">Creating account...</li>
-                    <li id="loginStatus" class="pending status" style="display: none;">Waiting for automatic login...</li>
+                    <li id="loginStatus" class="pending status" style="display: none;">Waiting for login...</li>
                 </ul>
                 <div id="fallbackMessage" class="fallback"></div>
             </main>
@@ -365,7 +127,7 @@
                     accountDone = true;
                     if (msg.status === "success") {
                         accountStatus.className = 'success status';
-                        accountStatus.innerText = "Account created successfully.";
+                        accountStatus.innerText = "Account created!.";
                         
                         // Show login status as next step
                         loginStatus.style.display = 'flex';
@@ -397,12 +159,10 @@
                         loginStatus.innerText = "Automatic login successful.";
                         setActiveStep(2);
                         
-                        // Add completed message
+                        // Add completed message with redirect timer
                         setTimeout(() => {
                             fallback.style.color = 'var(--success)';
-                            fallback.innerHTML = `<span style="color: var(--success); font-weight: 600;">
-                                <i class="fas fa-check-circle"></i> Setup Complete! You are now connected to the internet.
-                            </span>`;
+                            startRedirectTimer();
                         }, 1000);
                     } else {
                         loginStatus.className = 'failed status';
@@ -417,7 +177,62 @@
             }
         };
 
-       // Simulate message reception for testing UI (uncomment if needed)
+        // Timer functionality
+        function startRedirectTimer() {
+            const totalTime = 5; // 8 seconds
+            let timeLeft = totalTime;
+            
+            // Get redirect URL from query parameter
+
+            
+            // Create timer HTML
+            const timerHTML = `
+                <div class="timer-container">
+                    <div class="timer-message">
+                        <i class="fas fa-check-circle"></i> Internet connection successful!.
+                    </div>
+                    <div class="timer-circle">
+                        <svg viewBox="0 0 36 36">
+                            <circle class="timer-bg" cx="18" cy="18" r="15.9"></circle>
+                            <circle class="timer-progress" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="timer-text">${timeLeft}</div>
+                    </div>
+                    <div class="timer-redirect-url">Redirecting to: ${redirectUrl}</div>
+                </div>
+            `;
+            
+            fallback.innerHTML = timerHTML;
+            
+            const timerProgress = document.querySelector('.timer-progress');
+            const timerText = document.querySelector('.timer-text');
+            
+            // Set the circumference
+            const circumference = 2 * Math.PI * 15.9;
+            timerProgress.style.strokeDasharray = circumference;
+            
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                // Update text
+                timerText.textContent = timeLeft;
+                
+                // Update circle progress
+                const offset = circumference - (timeLeft / totalTime) * circumference;
+                timerProgress.style.strokeDashoffset = offset;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (redirectUrl) {
+                        window.location.href = "http://"+redirectUrl;
+                      } else {
+                        alert("No 'redirect_url' parameter found in the URL.");
+                      }
+                }
+            }, 1000);
+        }
+
+        // Simulate message reception for testing UI (uncomment if needed)
         
         setTimeout(() => {
             socket.onmessage({data: JSON.stringify({type: "payment", status: "success"})});
@@ -429,6 +244,7 @@
         
         setTimeout(() => {
             socket.onmessage({data: JSON.stringify({type: "login", status: "success"})});
+            startRedirectTimer()
         }, 6000);
         
     </script>

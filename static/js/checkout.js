@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const ip = document.getElementById('ip').value;
         const dns_name =  document.getElementById('dns_name').value;
         const ispId = document.getElementById('isp_id').value;
+        const redirectUrl = "http://"+zone+"."+dns_name;
     
         // Simple validation
         if (!phoneNumber || phoneNumber.length < 10) {
@@ -123,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Handle the JSON response from your server
             if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
                 // Redirect to the success page
-                window.location.href = '/confirm'; // important
+                window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl; // important
                 // Optionally reset the button if you navigate back later
                 // payButton.disabled = false;
                 // payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
