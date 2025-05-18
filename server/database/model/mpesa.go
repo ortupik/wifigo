@@ -1,6 +1,5 @@
 package model
 import (
-	"time"
    "github.com/shopspring/decimal"
 )
 
@@ -30,6 +29,6 @@ type MpesaCallbackPayload struct {
 	ResultDesc         string          `json:"ResultDesc"`
 	Amount             decimal.Decimal `json:"Amount"`
 	MpesaReceiptNumber string          `json:"MpesaReceiptNumber"`
-	TransactionDate    time.Time        `json:"TransactionDate"`
+	TransactionDate    string          `json:"TransactionDate"`
 	PhoneNumber        string          `json:"PhoneNumber"`
 }

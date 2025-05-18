@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -89,11 +90,17 @@ func main() {
 		log.Printf("Found existing device config: %+v", existingDevice)
 	}
 
-	currentDevice, err := mikrotikManager.GetDevice(sampleDevice.ID)
-	if currentDevice != nil {
-		err2 = mikrotikManager.AddDevice(sampleDevice)
-		handleError(err, "Failed to add MikroTik device")
+	currentDevice, _ := mikrotikManager.GetDevice(sampleDevice.ID)
+	if currentDevice == nil {
+		err = mikrotikManager.AddDevice(sampleDevice)
+		if(err != nil) {
+			handleError(err, "Failed to add MikroTik device")
+		}	
 	}
+
+	currentDevice, _ = mikrotikManager.GetDevice(sampleDevice.ID)
+
+	fmt.Println(currentDevice.Execute(`show routerboard`))
 
 	wsHub := websocket.NewHub()
 	go wsHub.Run()

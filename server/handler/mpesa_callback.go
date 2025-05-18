@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
@@ -151,12 +150,15 @@ func ParseCallback(data []byte) (*model.MpesaCallbackPayload, error) {
 					payload.MpesaReceiptNumber = val
 				}
 			case "TransactionDate":
-				if val, ok := item.Value.(float64); ok {
+				if val, ok := item.Value.(string); ok {
+					payload.TransactionDate = val
+				}
+				/*if val, ok := item.Value.(float64); ok {
 					timestamp := fmt.Sprintf("%d", int64(val))
 					if t, err := time.Parse("20060102150405", timestamp); err == nil {
 						payload.TransactionDate = t
 					}
-				}
+				}*/
 			case "PhoneNumber":
 				if val, ok := item.Value.(float64); ok {
 					payload.PhoneNumber = fmt.Sprintf("254%.0f", val-254000000000)

@@ -21,7 +21,6 @@ type user model.User
 
 // Add aliases for the new payments and orders models
 type payment model.Payment
-type transaction model.Transaction
 type order model.Order
 type servicePlan model.ServicePlan
 
@@ -30,7 +29,6 @@ func DropAllTables() error {
 	db := gdatabase.GetDB(config.AppDB)
 
 	if err := db.Migrator().DropTable(
-		&transaction{},
 		&payment{},
 		&order{},
 		&servicePlan{},
@@ -70,7 +68,6 @@ func StartMigration(configure gconfig.Configuration) error {
 			&servicePlan{},   // ServicePlan needs to exist before Order
 			&order{},         // Order needs User and ServicePlan
 			&payment{},       // Payment needs Order (and maybe User)
-			&transaction{}, // Transaction needs User, Payment, and Order
 		); err != nil {
 			return err
 		}
