@@ -7,156 +7,256 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #292C58;
+            --primary-light: #3a3e78;
+            --accent: #27ae60;
+            --accent-hover: #219955;
+            --secondary: #292C58;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --text-muted: #888888;
+            --border: #e2e8f0;
+            --border-light: #f0f4f8;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --radius: 10px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            color: #1f2937;
+            background-color: var(--bg);
+            color: var(--text);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(to bottom, #6ee7b7, #3b82f6);  /* Gradient background - more prominent*/
+            padding: 0;
+        }
+
+        header {
+            width: 100%;
+            padding: 1rem 0;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo img {
+            margin-right: 1rem;
+            height: 30px;
+        }
+
+        header .wifi-signal {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 2rem;
         }
 
         .container {
             max-width: 600px;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.15);
-            border-radius: 1rem;
-            box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.15);
-            padding: 2.5rem;
+            background-color: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
             text-align: center;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         h1 {
             font-size: 2.25rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: #ffffff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
         }
 
         #statusList {
             list-style: none;
             padding: 0;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         #statusList li {
             display: flex;
             align-items: center;
-            padding: 1.5rem;
-            margin-bottom: 1.25rem;
-            background-color: rgba(255, 255, 255, 0.06);
-            border-radius: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
             text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-        }
-
-        #statusList li:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 12px -3px rgba(0, 0, 0, 0.1);
-            background-color: rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, opacity 0.5s ease;
+            opacity: 0.6;
         }
 
         #statusList li.status {
-            font-weight: 600;
-            color: #ffffff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the text */
+            text-align: center;
+        }
+
+        #statusList li.active {
+            color: var(--accent);
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the text */
+            text-align: center;
         }
 
         .pending::before {
             content: '';
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 1rem;
+            height: 1rem;
             border-radius: 50%;
             background-color: #f59e0b;
-            margin-right: 1.5rem;
+            margin-right: 1rem;
             display: inline-block;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px #f59e0b;
+            animation: pulse 1.5s infinite;
         }
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
         }
 
         .success::before {
             content: '\f00c';
             font-family: 'Font Awesome 5 Free';
             font-weight: 600;
-            color: #10b981;
-            margin-right: 1.5rem;
+            color: var(--success);
+            margin-right: 1rem;
             display: inline-block;
-            font-size: 1.5rem;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 1rem;
         }
 
         .failed::before {
             content: '\f00d';
             font-family: 'Font Awesome 5 Free';
             font-weight: 600;
-            color: #ef4444;
-            margin-right: 1.5rem;
+            color: var(--danger);
+            margin-right: 1rem;
             display: inline-block;
-            font-size: 1.5rem;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-size: 1rem;
         }
 
         #fallbackMessage {
-            margin-top: 2.5rem;
-            color: #ffffff;
-            font-size: 1.1rem;
+            margin-top: 2rem;
+            color: var(--danger);
+            font-size: 1rem;
             text-align: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
-        #fallbackMessage a {
-            color: #86efac;
+        #fallbackMessage a{
+            color: #3b82f6;
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
-        #fallbackMessage a:hover {
+        #fallbackMessage a:hover{
             text-decoration: underline;
-            color: #a7f3d0;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
         }
 
         /* Specific styling for each status */
-        #paymentStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+        #paymentStatus.pending::before { background-color: #f59e0b; }
         #paymentStatus.success::before { color: #10b981; }
         #paymentStatus.failed::before { color: #ef4444; }
 
-        #accountStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+        #accountStatus.pending::before { background-color: #f59e0b; }
         #accountStatus.success::before { color: #10b981; }
         #accountStatus.failed::before { color: #ef4444; }
 
-        #loginStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+        #loginStatus.pending::before { background-color: #f59e0b; }
         #loginStatus.success::before { color: #10b981; }
         #loginStatus.failed::before { color: #ef4444; }
 
-        /* Added to move the icon */
-        #statusList li::before {
-            margin-right: 1.5rem;
+        footer {
+            width: 100%;
+            background-color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer p {
+            font-size: 0.875rem;
+            color: #4a5568;
+        }
+
+        footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Activating Your WiFi</h1>
-        <ul id="statusList">
-            <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
-            <li id="accountStatus" class="pending status">Creating account...</li>
-            <li id="loginStatus" class="pending status">Waiting for automatic login...</li>
-        </ul>
-        <div id="fallbackMessage" class="fallback"></div>
-    </div>
-
+    <header>
+        <div class="logo">
+            <img src="https://tecsurf.com/wp-content/uploads/2023/09/Tecsurf-logo-sq.png" alt="Tecsurf Logo">
+            <h1 style="font-size: 1.25rem; font-weight: 600; color: var(--accent);">Tecsurf</h1>
+        </div>
+        <div class="wifi-signal">
+            <i class="fas fa-wifi"></i>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h1>Activating Your WiFi</h1>
+            <ul id="statusList">
+                <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
+                <li id="accountStatus" class="pending status" style="display: none;">Creating account...</li>
+                <li id="loginStatus" class="pending status" style="display: none;">Waiting for automatic login...</li>
+            </ul>
+            <div id="fallbackMessage" class="fallback"></div>
+        </div>
+    </main>
+    <footer>
+        <p>
+            Having trouble? Please contact us at
+            <a href="mailto:support@tecsurf.com">support@tecsurf.com</a> or call us at
+            <a href="tel:+254796411411">+254 796 411 411</a>.
+        </p>
+    </footer>
     <script>
         const ip = "192.168.9.220";
         const socket = new WebSocket("ws://204.13.232.131:8999/ws?ip=" + ip);
@@ -169,14 +269,36 @@
         let paymentDone = false;
         let loginDone = false;
         let accountDone = false;
+        let currentStep = 0;
 
-        // Set login fallback timeout (after payment and account creation)
+        const statusListItems = [paymentStatus, accountStatus, loginStatus];
+
+        function setActiveStep(step) {
+            if (step >= 0 && step < statusListItems.length) {
+                statusListItems.forEach((item, index) => {
+                    if (index === step) {
+                        item.classList.add('active');
+                        item.style.display = 'flex';
+                    } else {
+                        item.classList.remove('active');
+                        item.style.opacity = 0.6;
+                        item.style.display = index === 0 ? 'flex' : 'none';
+                    }
+                });
+                currentStep = step;
+            }
+        }
+
+        setActiveStep(0);
+
+        // Set login fallback timeout
         const loginTimeout = setTimeout(() => {
             if (!loginDone && paymentDone && accountDone) {
                 loginStatus.className = 'failed status';
                 loginStatus.innerText = 'Automatic login timed out.';
                 fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
                 loginDone = true;
+                setActiveStep(statusListItems.length - 1);
             }
         }, 20000);
 
@@ -188,29 +310,34 @@
                 if (msg.type === "payment" && !paymentDone) {
                     paymentDone = true;
                     if (msg.status === "success") {
-                        paymentStatus.className = 'success status';
+                        paymentStatus.className = 'success status active';
                         paymentStatus.innerText = "Payment successful.";
+                        setActiveStep(1);
                     } else {
-                        paymentStatus.className = 'failed status';
+                        paymentStatus.className = 'failed status active';
                         paymentStatus.innerText = "Payment failed: " + msg.message;
+                        setActiveStep(statusListItems.length - 1);
                     }
                 }
 
                 if (msg.type === "create_account" && !accountDone) {
                     accountDone = true;
                     if (msg.status === "success") {
-                        accountStatus.className = 'success status';
+                        accountStatus.className = 'success status active';
                         accountStatus.innerText = "Account created successfully.";
+                        setActiveStep(2);
                     } else {
                         if (msg.message == "User already subscribed") {
                             paymentDone = true;
-                            accountStatus.className = 'success status';
+                            accountStatus.className = 'success status active';
                             accountStatus.innerText = "Account exists.";
-                            paymentStatus.className = 'success status';
+                            paymentStatus.className = 'success status active';
                             paymentStatus.innerText = "Payment successful.";
+                            setActiveStep(2);
                         } else {
-                            accountStatus.className = 'failed status';
+                            accountStatus.className = 'failed status active';
                             accountStatus.innerText = "Account creation failed: " + msg.message;
+                            setActiveStep(statusListItems.length - 1);
                         }
                     }
                 }
@@ -219,12 +346,14 @@
                     loginDone = true;
                     clearTimeout(loginTimeout);
                     if (msg.status === "success") {
-                        loginStatus.className = 'success status';
+                        loginStatus.className = 'success status active';
                         loginStatus.innerText = "Automatic login successful.";
+                        setActiveStep(statusListItems.length - 1);
                     } else {
-                        loginStatus.className = 'failed status';
+                        loginStatus.className = 'failed status active';
                         loginStatus.innerText = "Login failed: " + msg.message;
                         fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+                        setActiveStep(statusListItems.length - 1);
                     }
                 }
 
