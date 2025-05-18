@@ -223,7 +223,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     if (redirectUrl) {
-                        window.location.href = "http://"+redirectUrl;
+                        window.location.href = redirectUrl;
                       } else {
                         alert("No 'redirect_url' parameter found in the URL.");
                       }
@@ -233,7 +233,7 @@
 
         // Simulate message reception for testing UI (uncomment if needed)
         
-        setTimeout(() => {
+       /* setTimeout(() => {
             socket.onmessage({data: JSON.stringify({type: "payment", status: "success"})});
         }, 2000);
         
@@ -244,7 +244,7 @@
         setTimeout(() => {
             socket.onmessage({data: JSON.stringify({type: "login", status: "success"})});
             startRedirectTimer()
-        }, 6000);
+        }, 6000);*/
         
     </script>
 </body>
