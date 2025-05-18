@@ -34,62 +34,61 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
 
-        header {
+        .container {
+            max-width: 500px;
             width: 100%;
-            padding: 1rem 0;
-            background-color: #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-left: 2rem;
-            padding-right: 2rem;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        header .logo {
-            display: flex;
-            align-items: center;
+        .payment-card {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 500px;
         }
 
-        header .logo img {
-            margin-right: 1rem;
-            height: 30px;
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
         }
 
-        header .wifi-signal {
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
             font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 i {
+            margin-right: 10px;
             color: var(--accent);
         }
 
         main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
             padding: 2rem;
-        }
-
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: #fff;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 2rem;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
         }
 
         #statusList {
@@ -116,18 +115,18 @@
             color: var(--text);
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the text */
+            justify-content: center;
             text-align: center;
         }
 
         #statusList li.active {
             color: var(--accent);
             opacity: 1;
-            transform: scale(1.05);
+            transform: scale(1.02);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the text */
+            justify-content: center;
             text-align: center;
         }
 
@@ -141,10 +140,11 @@
             display: inline-block;
             animation: pulse 1.5s infinite;
         }
+        
         @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .success::before {
@@ -173,13 +173,22 @@
             font-size: 1rem;
             text-align: center;
         }
-        #fallbackMessage a{
+        
+        #fallbackMessage a {
             color: #3b82f6;
             text-decoration: none;
             font-weight: 600;
+            padding: 8px 16px;
+            background-color: #f0f7ff;
+            border-radius: 4px;
+            display: inline-block;
+            transition: var(--transition);
         }
-        #fallbackMessage a:hover{
-            text-decoration: underline;
+        
+        #fallbackMessage a:hover {
+            background-color: #dbeafe;
+            text-decoration: none;
+            transform: translateY(-2px);
         }
 
         /* Specific styling for each status */
@@ -195,27 +204,22 @@
         #loginStatus.success::before { color: #10b981; }
         #loginStatus.failed::before { color: #ef4444; }
 
-        footer {
-            width: 100%;
-            background-color: #fff;
-            padding: 1.5rem 0;
+        /* Footer */
+        .footer {
             text-align: center;
-            margin-top: 2rem;
-            border-top: 1px solid var(--border);
+            margin-top: 30px;
+            color: var(--text-muted);
         }
 
-        footer p {
-            font-size: 0.875rem;
-            color: #4a5568;
+        .footer-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
         }
 
-        footer a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
+        .footer-text {
+            font-size: 0.9rem;
         }
 
         /* Animations */
@@ -224,39 +228,58 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .container {
+        .payment-card {
             animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 33.33%;
+            background-color: var(--accent);
+            border-radius: 3px;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="https://tecsurf.com/wp-content/uploads/2023/09/Tecsurf-logo-sq.png" alt="Tecsurf Logo">
-            <h1 style="font-size: 1.25rem; font-weight: 600; color: var(--accent);">Tecsurf</h1>
+    <div class="container">
+        <div class="payment-card">
+            <div class="header">
+                <h1><i class="fas fa-wifi"></i> Tecsurf Hotspot Payment</h1>
+            </div>
+            <main>
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <ul id="statusList">
+                    <li id="paymentStatus" class="pending status active">Waiting for payment confirmation...</li>
+                    <li id="accountStatus" class="pending status" style="display: none;">Creating account...</li>
+                    <li id="loginStatus" class="pending status" style="display: none;">Waiting for automatic login...</li>
+                </ul>
+                <div id="fallbackMessage" class="fallback"></div>
+            </main>
         </div>
-        <div class="wifi-signal">
-            <i class="fas fa-wifi"></i>
+        
+        <div class="footer">
+            <div class="footer-logo">
+                <i class="fas fa-wifi"></i> Tecsurf
+            </div>
+            <div class="footer-text">
+                © 2025 Tecsurf | All Rights Reserved
+            </div>
         </div>
-    </header>
-    <main>
-        <div class="container">
-            <h1>Activating Your WiFi</h1>
-            <ul id="statusList">
-                <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
-                <li id="accountStatus" class="pending status" style="display: none;">Creating account...</li>
-                <li id="loginStatus" class="pending status" style="display: none;">Waiting for automatic login...</li>
-            </ul>
-            <div id="fallbackMessage" class="fallback"></div>
-        </div>
-    </main>
-    <footer>
-        <p>
-            Having trouble? Please contact us at
-            <a href="mailto:support@tecsurf.com">support@tecsurf.com</a> or call us at
-            <a href="tel:+254796411411">+254 796 411 411</a>.
-        </p>
-    </footer>
+    </div>
+
     <script>
         const ip = "192.168.9.220";
         const socket = new WebSocket("ws://204.13.232.131:8999/ws?ip=" + ip);
@@ -265,6 +288,7 @@
         const accountStatus = document.getElementById("accountStatus");
         const loginStatus = document.getElementById("loginStatus");
         const fallback = document.getElementById("fallbackMessage");
+        const progressBar = document.getElementById("progressBar");
 
         let paymentDone = false;
         let loginDone = false;
@@ -275,20 +299,34 @@
 
         function setActiveStep(step) {
             if (step >= 0 && step < statusListItems.length) {
+                // Update progress bar
+                progressBar.style.width = `${((step + 1) / statusListItems.length) * 100}%`;
+                
+                // Update all status items
                 statusListItems.forEach((item, index) => {
-                    if (index === step) {
-                        item.classList.add('active');
+                    // Reset styling
+                    item.classList.remove('active');
+                    
+                    // Show all items up to and including current step
+                    if (index <= step) {
                         item.style.display = 'flex';
+                        item.style.opacity = index === step ? 1 : 0.7;
+                        
+                        // Add active class only to current step
+                        if (index === step) {
+                            item.classList.add('active');
+                        }
                     } else {
-                        item.classList.remove('active');
-                        item.style.opacity = 0.6;
-                        item.style.display = index === 0 ? 'flex' : 'none';
+                        // Hide future steps
+                        item.style.display = 'none';
                     }
                 });
+                
                 currentStep = step;
             }
         }
 
+        // Initialize with first step
         setActiveStep(0);
 
         // Set login fallback timeout
@@ -298,7 +336,7 @@
                 loginStatus.innerText = 'Automatic login timed out.';
                 fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
                 loginDone = true;
-                setActiveStep(statusListItems.length - 1);
+                setActiveStep(2);
             }
         }, 20000);
 
@@ -310,34 +348,43 @@
                 if (msg.type === "payment" && !paymentDone) {
                     paymentDone = true;
                     if (msg.status === "success") {
-                        paymentStatus.className = 'success status active';
+                        paymentStatus.className = 'success status';
                         paymentStatus.innerText = "Payment successful.";
+                        
+                        // Show account status as next step
+                        accountStatus.style.display = 'flex';
                         setActiveStep(1);
                     } else {
-                        paymentStatus.className = 'failed status active';
+                        paymentStatus.className = 'failed status';
                         paymentStatus.innerText = "Payment failed: " + msg.message;
-                        setActiveStep(statusListItems.length - 1);
+                        setActiveStep(0);
                     }
                 }
 
                 if (msg.type === "create_account" && !accountDone) {
                     accountDone = true;
                     if (msg.status === "success") {
-                        accountStatus.className = 'success status active';
+                        accountStatus.className = 'success status';
                         accountStatus.innerText = "Account created successfully.";
+                        
+                        // Show login status as next step
+                        loginStatus.style.display = 'flex';
                         setActiveStep(2);
                     } else {
-                        if (msg.message == "User already subscribed") {
+                        if (msg.message === "User already subscribed") {
                             paymentDone = true;
-                            accountStatus.className = 'success status active';
+                            accountStatus.className = 'success status';
                             accountStatus.innerText = "Account exists.";
-                            paymentStatus.className = 'success status active';
+                            paymentStatus.className = 'success status';
                             paymentStatus.innerText = "Payment successful.";
+                            
+                            // Show login status as next step
+                            loginStatus.style.display = 'flex';
                             setActiveStep(2);
                         } else {
-                            accountStatus.className = 'failed status active';
+                            accountStatus.className = 'failed status';
                             accountStatus.innerText = "Account creation failed: " + msg.message;
-                            setActiveStep(statusListItems.length - 1);
+                            setActiveStep(1);
                         }
                     }
                 }
@@ -346,14 +393,22 @@
                     loginDone = true;
                     clearTimeout(loginTimeout);
                     if (msg.status === "success") {
-                        loginStatus.className = 'success status active';
+                        loginStatus.className = 'success status';
                         loginStatus.innerText = "Automatic login successful.";
-                        setActiveStep(statusListItems.length - 1);
+                        setActiveStep(2);
+                        
+                        // Add completed message
+                        setTimeout(() => {
+                            fallback.style.color = 'var(--success)';
+                            fallback.innerHTML = `<span style="color: var(--success); font-weight: 600;">
+                                <i class="fas fa-check-circle"></i> Setup Complete! You are now connected to the internet.
+                            </span>`;
+                        }, 1000);
                     } else {
-                        loginStatus.className = 'failed status active';
-                        loginStatus.innerText = "Login failed: " + msg.message;
+                        loginStatus.className = 'failed status';
+                        loginStatus.innerText = "Automatic login failed";
                         fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
-                        setActiveStep(statusListItems.length - 1);
+                        setActiveStep(2);
                     }
                 }
 
@@ -361,6 +416,21 @@
                 console.error("Invalid WS message:", event.data);
             }
         };
+
+       // Simulate message reception for testing UI (uncomment if needed)
+        
+        setTimeout(() => {
+            socket.onmessage({data: JSON.stringify({type: "payment", status: "success"})});
+        }, 2000);
+        
+        setTimeout(() => {
+            socket.onmessage({data: JSON.stringify({type: "create_account", status: "success"})});
+        }, 4000);
+        
+        setTimeout(() => {
+            socket.onmessage({data: JSON.stringify({type: "login", status: "success"})});
+        }, 6000);
+        
     </script>
 </body>
 </html>
