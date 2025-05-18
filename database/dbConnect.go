@@ -368,7 +368,7 @@ func InitRedis() (*radix.Client, error) {
 	port := configureRedis.Env.Port
 	address := fmt.Sprintf("%s:%s", host, port)
 	if host == "" || port == "" {
-        address = "0.0.0.0:6379" // Radix default
+        address = "127.0.0.1:6379" // Radix default
         log.Warningf("Redis host or port not specified in config, using default address: %s", address)
     }
 

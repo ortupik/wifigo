@@ -212,11 +212,5 @@ func formatPhoneNumber(phone string) string {
 	return phone // Return the original if it doesn't match any expected format.  Consider logging an error.
 }
 
-// Plan defines the structure for a service plan.
-type Plan struct {
-	ID    string
-	Name  string
-	Price int
-	// ... other plan fields
-}
+
 
