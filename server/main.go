@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -99,8 +98,6 @@ func main() {
 	}
 
 	currentDevice, _ = mikrotikManager.GetDevice(sampleDevice.ID)
-
-	fmt.Println(currentDevice.Execute("/interface print"))
 
 	wsHub := websocket.NewHub()
 	go wsHub.Run()
