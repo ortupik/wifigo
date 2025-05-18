@@ -100,7 +100,7 @@ func main() {
 
 	currentDevice, _ = mikrotikManager.GetDevice(sampleDevice.ID)
 
-	fmt.Println(currentDevice.Execute(`/interface print`))
+	fmt.Println(currentDevice.Execute("/interface print"))
 
 	wsHub := websocket.NewHub()
 	go wsHub.Run()
