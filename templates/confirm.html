@@ -9,118 +9,141 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light background */
-            color: #1f2937; /* Darker text */
+            color: #1f2937;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            background: linear-gradient(to bottom, #6ee7b7, #3b82f6);  /* Gradient background - more prominent*/
         }
 
         .container {
-            max-width: 600px; /* Increased max-width */
+            max-width: 600px;
             width: 100%;
-            background-color: #fff;
-            border-radius: 0.75rem; /* Rounded corners */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow */
-            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.15);
+            padding: 2.5rem;
             text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         h1 {
-            font-size: 1.875rem; /* Larger heading */
-            font-weight: 600; /* Semi-bold */
-            margin-bottom: 1.5rem; /* Increased margin */
-            color: #10b981; /* Green color for activation */
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         #statusList {
             list-style: none;
             padding: 0;
-            margin-bottom: 2rem; /* Increased margin */
+            margin-bottom: 2.5rem;
         }
 
         #statusList li {
             display: flex;
             align-items: center;
-            padding: 1.25rem; /* Increased padding */
-            margin-bottom: 1rem; /* Increased margin */
-            background-color: #f7fafc; /* Lighter background for list items */
-            border-radius: 0.5rem; /* Rounded corners */
-            border: 1px solid #e2e8f0; /* Lighter border */
-            text-align: left; /* Left-align the text */
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            background-color: rgba(255, 255, 255, 0.06);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+
+        #statusList li:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px -3px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         #statusList li.status {
-            font-weight: 500; /* Medium font weight for status */
-            color: #334155;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .pending::before {
             content: '';
-            width: 1rem;
-            height: 1rem;
+            width: 1.25rem;
+            height: 1.25rem;
             border-radius: 50%;
-            background-color: #f59e0b; /* Amber/Yellow for pending */
-            margin-right: 1rem; /* Space before the icon */
+            background-color: #f59e0b;
+            margin-right: 1.5rem;
             display: inline-block;
-            animation: pulse 1.5s infinite;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #f59e0b;
         }
         @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
         .success::before {
-            content: '\f00c'; /* Font Awesome check icon */
+            content: '\f00c';
             font-family: 'Font Awesome 5 Free';
-            font-weight: 600; /* Solid style */
-            color: #10b981; /* Green for success */
-            margin-right: 1rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-right: 1.5rem;
             display: inline-block;
-            font-size: 1rem;
+            font-size: 1.5rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .failed::before {
-            content: '\f00d'; /* Font Awesome times icon */
+            content: '\f00d';
             font-family: 'Font Awesome 5 Free';
-            font-weight: 600; /* Solid style */
-            color: #ef4444; /* Red for failure */
-            margin-right: 1rem;
+            font-weight: 600;
+            color: #ef4444;
+            margin-right: 1.5rem;
             display: inline-block;
-            font-size: 1rem;
+            font-size: 1.5rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         #fallbackMessage {
-            margin-top: 2rem; /* Increased margin */
-            color: #dc2626; /* Darker red */
-            font-size: 1rem;
+            margin-top: 2.5rem;
+            color: #ffffff;
+            font-size: 1.1rem;
             text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
-        #fallbackMessage a{
-            color: #3b82f6;
+        #fallbackMessage a {
+            color: #86efac;
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
-        #fallbackMessage a:hover{
+        #fallbackMessage a:hover {
             text-decoration: underline;
+            color: #a7f3d0;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
         }
 
         /* Specific styling for each status */
-        #paymentStatus.pending::before { background-color: #f59e0b; }
+        #paymentStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
         #paymentStatus.success::before { color: #10b981; }
         #paymentStatus.failed::before { color: #ef4444; }
 
-        #accountStatus.pending::before { background-color: #f59e0b; }
+        #accountStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
         #accountStatus.success::before { color: #10b981; }
         #accountStatus.failed::before { color: #ef4444; }
 
-        #loginStatus.pending::before { background-color: #f59e0b; }
+        #loginStatus.pending::before { background-color: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
         #loginStatus.success::before { color: #10b981; }
         #loginStatus.failed::before { color: #ef4444; }
+
+        /* Added to move the icon */
+        #statusList li::before {
+            margin-right: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -155,7 +178,7 @@
                 fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
                 loginDone = true;
             }
-        }, 20000); // Increased timeout to 20 seconds
+        }, 20000);
 
         socket.onmessage = (event) => {
             try {
