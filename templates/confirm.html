@@ -1,137 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WiFi Activation</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background-color: #f5f5f5;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    .status {
-      font-weight: bold;
-    }
-    .pending::before {
-      content: '⏳ ';
-      color: gray;
-    }
-    .success::before {
-      content: '✅ ';
-      color: green;
-    }
-    .failed::before {
-      content: '❌ ';
-      color: red;
-    }
-    .fallback {
-      margin-top: 1rem;
-      color: red;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Activation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light background */
+            color: #1f2937; /* Darker text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px; /* Increased max-width */
+            width: 100%;
+            background-color: #fff;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow */
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.875rem; /* Larger heading */
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 1.5rem; /* Increased margin */
+            color: #10b981; /* Green color for activation */
+        }
+
+        #statusList {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem; /* Increased margin */
+        }
+
+        #statusList li {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem; /* Increased padding */
+            margin-bottom: 1rem; /* Increased margin */
+            background-color: #f7fafc; /* Lighter background for list items */
+            border-radius: 0.5rem; /* Rounded corners */
+            border: 1px solid #e2e8f0; /* Lighter border */
+            text-align: left; /* Left-align the text */
+        }
+
+        #statusList li.status {
+            font-weight: 500; /* Medium font weight for status */
+            color: #334155;
+        }
+
+        .pending::before {
+            content: '';
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: #f59e0b; /* Amber/Yellow for pending */
+            margin-right: 1rem; /* Space before the icon */
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+
+        .success::before {
+            content: '\f00c'; /* Font Awesome check icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 600; /* Solid style */
+            color: #10b981; /* Green for success */
+            margin-right: 1rem;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .failed::before {
+            content: '\f00d'; /* Font Awesome times icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 600; /* Solid style */
+            color: #ef4444; /* Red for failure */
+            margin-right: 1rem;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        #fallbackMessage {
+            margin-top: 2rem; /* Increased margin */
+            color: #dc2626; /* Darker red */
+            font-size: 1rem;
+            text-align: center;
+        }
+        #fallbackMessage a{
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #fallbackMessage a:hover{
+            text-decoration: underline;
+        }
+
+        /* Specific styling for each status */
+        #paymentStatus.pending::before { background-color: #f59e0b; }
+        #paymentStatus.success::before { color: #10b981; }
+        #paymentStatus.failed::before { color: #ef4444; }
+
+        #accountStatus.pending::before { background-color: #f59e0b; }
+        #accountStatus.success::before { color: #10b981; }
+        #accountStatus.failed::before { color: #ef4444; }
+
+        #loginStatus.pending::before { background-color: #f59e0b; }
+        #loginStatus.success::before { color: #10b981; }
+        #loginStatus.failed::before { color: #ef4444; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Activating Your WiFi</h1>
+        <ul id="statusList">
+            <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
+            <li id="accountStatus" class="pending status">Creating account...</li>
+            <li id="loginStatus" class="pending status">Waiting for automatic login...</li>
+        </ul>
+        <div id="fallbackMessage" class="fallback"></div>
+    </div>
 
-  <h1>Activating Your WiFi</h1>
+    <script>
+        const ip = "192.168.9.220";
+        const socket = new WebSocket("ws://204.13.232.131:8999/ws?ip=" + ip);
 
-  <ul id="statusList">
-    <li id="paymentStatus" class="pending status">Waiting for payment confirmation...</li>
-    <li id="accountStatus" class="pending status">Creating account...</li>
-    <li id="loginStatus" class="pending status">Waiting for automatic login...</li>
-  </ul>
+        const paymentStatus = document.getElementById("paymentStatus");
+        const accountStatus = document.getElementById("accountStatus");
+        const loginStatus = document.getElementById("loginStatus");
+        const fallback = document.getElementById("fallbackMessage");
 
-  <div id="fallbackMessage" class="fallback"></div>
+        let paymentDone = false;
+        let loginDone = false;
+        let accountDone = false;
 
-  <script>
-
-    const ip = "192.168.9.220"
-    const socket = new WebSocket("ws://204.13.232.131:8999/ws?ip=" + ip);
-
-    const paymentStatus = document.getElementById("paymentStatus");
-    const accountStatus = document.getElementById("accountStatus");
-    const loginStatus = document.getElementById("loginStatus");
-    const fallback = document.getElementById("fallbackMessage");
-
-    let paymentDone = false;
-    let loginDone = false;
-    let accountDone = false;
-
-
-    // Set login fallback timeout (after payment and account creation)
-    const loginTimeout = setTimeout(() => {
-      if (!loginDone && paymentDone && accountDone) {
-        loginStatus.className = 'failed status';
-        loginStatus.innerText = 'Automatic login timed out.';
-        fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
-        loginDone = true;
-      }
-    }, 2000);
-
-    socket.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-        console.log("WS Message:", msg);
-
-        if (msg.type === "payment" && !paymentDone) {
-          paymentDone = true;
-          if (msg.status === "success") {
-            paymentStatus.className = 'success status';
-            paymentStatus.innerText = "Payment successful.";
-          } else {
-            paymentStatus.className = 'failed status';
-            paymentStatus.innerText = "Payment failed: " + msg.message;
-          }
-        }
-
-        if (msg.type === "create_account" && !accountDone) {
-           accountDone = true;
-          if (msg.status === "success") {
-            accountStatus.className = 'success status';
-            accountStatus.innerText = "Account created successfully.";
-          } else {
-           
-            if(msg.message == "User already subscribed"){
-                paymentDone = true;
-                accountStatus.className = 'success status';
-                accountStatus.innerText = "Account exists.";
-                paymentStatus.className = 'success status';
-                paymentStatus.innerText = "Payment successful.";
-            }else{
-                accountStatus.className = 'failed status';
-                accountStatus.innerText = "Account creation failed: " + msg.message;
+        // Set login fallback timeout (after payment and account creation)
+        const loginTimeout = setTimeout(() => {
+            if (!loginDone && paymentDone && accountDone) {
+                loginStatus.className = 'failed status';
+                loginStatus.innerText = 'Automatic login timed out.';
+                fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+                loginDone = true;
             }
-          }
-        }
+        }, 20000); // Increased timeout to 20 seconds
 
-        if (msg.type === "login" && !loginDone) {
-          loginDone = true;
-          clearTimeout(loginTimeout);
-          if (msg.status === "success") {
-            loginStatus.className = 'success status';
-            loginStatus.innerText = "Automatic login successful.";
-          } else {
-            loginStatus.className = 'failed status';
-            loginStatus.innerText = "Login failed: " + msg.message;
-            fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
-          }
-        }
+        socket.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                console.log("WS Message:", msg);
 
-      } catch (e) {
-        console.error("Invalid WS message:", event.data);
-      }
-    };
-  </script>
+                if (msg.type === "payment" && !paymentDone) {
+                    paymentDone = true;
+                    if (msg.status === "success") {
+                        paymentStatus.className = 'success status';
+                        paymentStatus.innerText = "Payment successful.";
+                    } else {
+                        paymentStatus.className = 'failed status';
+                        paymentStatus.innerText = "Payment failed: " + msg.message;
+                    }
+                }
 
+                if (msg.type === "create_account" && !accountDone) {
+                    accountDone = true;
+                    if (msg.status === "success") {
+                        accountStatus.className = 'success status';
+                        accountStatus.innerText = "Account created successfully.";
+                    } else {
+                        if (msg.message == "User already subscribed") {
+                            paymentDone = true;
+                            accountStatus.className = 'success status';
+                            accountStatus.innerText = "Account exists.";
+                            paymentStatus.className = 'success status';
+                            paymentStatus.innerText = "Payment successful.";
+                        } else {
+                            accountStatus.className = 'failed status';
+                            accountStatus.innerText = "Account creation failed: " + msg.message;
+                        }
+                    }
+                }
+
+                if (msg.type === "login" && !loginDone) {
+                    loginDone = true;
+                    clearTimeout(loginTimeout);
+                    if (msg.status === "success") {
+                        loginStatus.className = 'success status';
+                        loginStatus.innerText = "Automatic login successful.";
+                    } else {
+                        loginStatus.className = 'failed status';
+                        loginStatus.innerText = "Login failed: " + msg.message;
+                        fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+                    }
+                }
+
+            } catch (e) {
+                console.error("Invalid WS message:", event.data);
+            }
+        };
+    </script>
 </body>
 </html>
