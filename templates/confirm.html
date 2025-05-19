@@ -121,8 +121,8 @@
                         paymentStatus.className = 'failed status';
                         paymentStatus.innerText = "Payment failed: " + msg.message;
                         
-                        fallback.innerHTML = `<a href="http://${previousUrl}">Go back to </a>`;
-                        setActiveStep(0);
+                        fallback.innerHTML = `<a href="//${previousUrl}">Go back to  </a>`;
+                       // setActiveStep(0);
                     }
                 }
 
