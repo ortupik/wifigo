@@ -3,269 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WiFi Activation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/confirm.css">
-    <script src='/static/js/sweetalert2.js'></script>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirectUrl = urlParams.get('redirect_url');
-        const ip = urlParams.get('ip');
-        const previousUrl = document.referrer;
-    </script>
+    <title>Payment Confirmation | Wi-Fi Access Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --grey-color: #95a5a6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--grey-color);
+            font-size: 1rem;
+        }
+
+        .payment-status {
+            text-align: center;
+            padding: 2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .status-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pending .status-icon {
+            color: var(--warning-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        .success .status-icon {
+            color: var(--success-color);
+        }
+
+        .error .status-icon {
+            color: var(--error-color);
+        }
+
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pending .status-title {
+            color: var(--warning-color);
+        }
+
+        .success .status-title {
+            color: var(--success-color);
+        }
+
+        .error .status-title {
+            color: var(--error-color);
+        }
+
+        .status-message {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .transaction-details {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .transaction-details h2 {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--grey-color);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--grey-color);
+            color: var(--dark-color);
+        }
+
+        .btn-outline:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn:disabled {
+            background-color: var(--grey-color);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .timer {
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            color: var(--grey-color);
+        }
+
+        .timer span {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .try-again-section {
+            margin-top: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+
+        .try-again-section p {
+            margin-bottom: 1rem;
+            color: var(--grey-color);
+        }
+
+        #alert-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            max-width: 350px;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid var(--error-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="payment-card">
-            <div class="header">
-                <h3><i class="fas fa-wifi"></i> Tecsurf Hotspot Payment</h3>
-            </div>
-            <main>
-                <div class="progress-container">
-                    <div id="progressBar" class="progress-bar"></div>
-                </div>
-                <ul id="statusList">
-                    <li id="paymentStatus" class="pending status active">Confirming Payment...</li>
-                    <li id="accountStatus" class="pending status" style="display: none;">Creating account...</li>
-                    <li id="loginStatus" class="pending status" style="display: none;">Waiting for login...</li>
-                </ul>
-                <div id="fallbackMessage" class="fallback"></div>
-            </main>
+        <div class="header">
+            <h1>Payment Confirmation</h1>
+            <p>We're processing your payment for Wi-Fi access</p>
         </div>
-        
-        <div class="footer">
-            <div class="footer-logo">
-                <i class="fas fa-wifi"></i> Tecsurf
+
+        <div id="payment-status" class="payment-status pending">
+            <i class="fas fa-circle-notch fa-spin status-icon"></i>
+            <h2 class="status-title">Processing Payment</h2>
+            <p class="status-message">Please check your phone and confirm the M-Pesa payment prompt.</p>
+        </div>
+
+        <div class="timer" id="timer-section">
+            Auto-redirecting in <span id="countdown">120</span> seconds
+        </div>
+
+        <div class="transaction-details" id="transaction-details">
+            <h2>Transaction Details</h2>
+            <div class="detail-item">
+                <span class="detail-label">Status</span>
+                <span class="detail-value" id="payment-result">Pending</span>
             </div>
-            <div class="footer-text">
-                © 2025 Tecsurf | All Rights Reserved
+            <div class="detail-item" id="receipt-row">
+                <span class="detail-label">Receipt Number</span>
+                <span class="detail-value" id="receipt-number">-</span>
             </div>
+            <div class="detail-item">
+                <span class="detail-label">Time</span>
+                <span class="detail-value" id="transaction-time"></span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="connect-button" class="btn btn-success hidden">
+                <i class="fas fa-wifi"></i>
+                <span>Connect to Wi-Fi</span>
+            </button>
+            <a href="/" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+
+        <div class="try-again-section" id="try-again-section">
+            <p>Didn't receive the payment prompt?</p>
+            <button id="try-again-button" class="btn btn-primary">
+                <i class="fas fa-redo"></i>
+                <span>Try Again</span>
+            </button>
         </div>
     </div>
 
+    <div id="alert-container"></div>
+
     <script>
-        const socket = new WebSocket("ws://204.13.232.131:8999/ws?ip=" + ip);
-
-        const paymentStatus = document.getElementById("paymentStatus");
-        const accountStatus = document.getElementById("accountStatus");
-        const loginStatus = document.getElementById("loginStatus");
-        const fallback = document.getElementById("fallbackMessage");
-        const progressBar = document.getElementById("progressBar");
-
-        let paymentDone = false;
-        let loginDone = false;
-        let accountDone = false;
-        let currentStep = 0;
-
-        const statusListItems = [paymentStatus, accountStatus, loginStatus];
-
-        function setActiveStep(step) {
-            if (step >= 0 && step < statusListItems.length) {
-                // Update progress bar
-                progressBar.style.width = `${((step + 1) / statusListItems.length) * 100}%`;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientIP = urlParams.get('ip');
+            const redirectUrl = urlParams.get('redirect_url');
+            
+            // Elements
+            const paymentStatus = document.getElementById('payment-status');
+            const statusIcon = paymentStatus.querySelector('.status-icon');
+            const statusTitle = paymentStatus.querySelector('.status-title');
+            const statusMessage = paymentStatus.querySelector('.status-message');
+            const connectButton = document.getElementById('connect-button');
+            const paymentResult = document.getElementById('payment-result');
+            const receiptNumber = document.getElementById('receipt-number');
+            const transactionTime = document.getElementById('transaction-time');
+            const transactionDetails = document.getElementById('transaction-details');
+            const tryAgainSection = document.getElementById('try-again-section');
+            const countdown = document.getElementById('countdown');
+            const timerSection = document.getElementById('timer-section');
+            const receiptRow = document.getElementById('receipt-row');
+            
+            // Show current date and time
+            const now = new Date();
+            transactionTime.textContent = now.toLocaleString();
+            
+            // Initialize WebSocket connection
+            let socket;
+            let countdownInterval;
+            let timeLeft = 120; // 2 minutes countdown
+            
+            function connectWebSocket() {
+                // Use secure WebSocket if the page is loaded over HTTPS
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const host = window.location.host;
+                socket = new WebSocket(`${protocol}//${host}/ws?ip=${clientIP}`);
                 
-                // Update all status items
-                statusListItems.forEach((item, index) => {
-                    // Reset styling
-                    item.classList.remove('active');
+                socket.onopen = function() {
+                    console.log('WebSocket connected');
+                    // Show payment pending UI after connection is established
+                    startCountdown();
+                    // After 30 seconds of waiting, show the try again option
+                    setTimeout(function() {
+                        if (paymentStatus.classList.contains('pending')) {
+                            tryAgainSection.style.display = 'block';
+                        }
+                    }, 30000);
+                };
+                
+                socket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    console.log('WebSocket message received:', data);
                     
-                    // Show all items up to and including current step
-                    if (index <= step) {
-                        item.style.display = 'flex';
-                        item.style.opacity = index === step ? 1 : 0.7;
-                        
-                        // Add active class only to current step
-                        if (index === step) {
-                            item.classList.add('active');
-                        }
-                    } else {
-                        // Hide future steps
-                        item.style.display = 'none';
+                    if (data.type === 'payment') {
+                        handlePaymentUpdate(data);
                     }
-                });
+                };
                 
-                currentStep = step;
+                socket.onclose = function() {
+                    console.log('WebSocket connection closed');
+                    // Try to reconnect after 5 seconds
+                    setTimeout(connectWebSocket, 5000);
+                };
+                
+                socket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
             }
-        }
-
-        // Initialize with first step
-        setActiveStep(0);
-
-        // Set login fallback timeout
-        const loginTimeout = setTimeout(() => {
-            if (!loginDone && paymentDone && accountDone) {
-                loginStatus.className = 'failed status';
-                loginStatus.innerText = 'Automatic login timed out.';
-                fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
-                loginDone = true;
-                setActiveStep(2);
-            }
-        }, 20000);
-
-        socket.onmessage = (event) => {
-            try {
-                const msg = JSON.parse(event.data);
-                console.log("WS Message:", msg);
-
-                if (msg.type === "payment" && !paymentDone) {
-                    paymentDone = true;
-                    if (msg.status === "success") {
-                        paymentStatus.className = 'success status';
-                        paymentStatus.innerText = "Payment successful.";
-                        
-                        // Show account status as next step
-                        accountStatus.style.display = 'flex';
-                        setActiveStep(1);
-                    } else {
-                        paymentStatus.classList.remove('active');
-                        paymentStatus.className = 'failed status';
-                        paymentStatus.innerText = "Payment failed: " + msg.message;
-
-                        fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
-
-                        showAlert("Payment failed!", msg.message);
-                       // setActiveStep(0);
-                    }
-                }
-
-                if (msg.type === "create_account" && !accountDone) {
-                    accountDone = true;
-                    if (msg.status === "success") {
-                        accountStatus.className = 'success status';
-                        accountStatus.innerText = "Account created!.";
-                        
-                        // Show login status as next step
-                        loginStatus.style.display = 'flex';
-                        setActiveStep(2);
-                    } else {
-                        if (msg.message === "User already subscribed") {
-                            paymentDone = true;
-                            accountStatus.className = 'success status';
-                            accountStatus.innerText = "Account exists.";
-                            paymentStatus.className = 'success status';
-                            paymentStatus.innerText = "Payment successful.";
-                            
-                            // Show login status as next step
-                            loginStatus.style.display = 'flex';
-                            setActiveStep(2);
-                        } else {
-                            accountStatus.className = 'failed status';
-                            accountStatus.innerText = "Account creation failed: " + msg.message;
-                            fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
-                            setActiveStep(1);
-                            showAlert("Account creation failed!", msg.message);
-                        }
-                    }
-                }
-
-                if (msg.type === "login" && !loginDone) {
-                    loginDone = true;
-                    clearTimeout(loginTimeout);
-                    if (msg.status === "success") {
-                        loginStatus.className = 'success status';
-                        loginStatus.innerText = "Automatic login successful.";
-                        setActiveStep(2);
-                        
-                        // Add completed message with redirect timer
-                        setTimeout(() => {
-                            fallback.style.color = 'var(--success)';
-                            startRedirectTimer();
-                        }, 1000);
-                    } else {
-                        loginStatus.className = 'failed status';
-                        loginStatus.innerText = "Automatic login failed";
-                        fallback.innerHTML = `<a href="${redirectUrl}">Click here to log in manually</a>`;
-                        setActiveStep(2);
-                    }
-                }
-
-            } catch (e) {
-                console.error("Invalid WS message:", event.data);
-            }
-        };
-
-        // Timer functionality
-        function startRedirectTimer() {
-            const totalTime = 5; // 8 seconds
-            let timeLeft = totalTime;
             
-            // Get redirect URL from query parameter
-
-            
-            // Create timer HTML
-            const timerHTML = `
-                <div class="timer-container">
-                    <div class="timer-message">
-                        <i class="fas fa-check-circle"></i> Internet connection successful!.
-                    </div>
-                    <div class="timer-circle">
-                        <svg viewBox="0 0 36 36">
-                            <circle class="timer-bg" cx="18" cy="18" r="15.9"></circle>
-                            <circle class="timer-progress" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="0"></circle>
-                        </svg>
-                        <div class="timer-text">${timeLeft}</div>
-                    </div>
-                    <div class="timer-redirect-url">Redirecting to: ${redirectUrl}</div>
-                </div>
-            `;
-            
-            fallback.innerHTML = timerHTML;
-            
-            const timerProgress = document.querySelector('.timer-progress');
-            const timerText = document.querySelector('.timer-text');
-            
-            // Set the circumference
-            const circumference = 2 * Math.PI * 15.9;
-            timerProgress.style.strokeDasharray = circumference;
-            
-            const timerInterval = setInterval(() => {
-                timeLeft--;
+            function handlePaymentUpdate(data) {
+                // Clear countdown timer
+                clearInterval(countdownInterval);
+                timerSection.classList.add('hidden');
                 
-                // Update text
-                timerText.textContent = timeLeft;
+                // Show transaction details
+                transactionDetails.style.display = 'block';
                 
-                // Update circle progress
-                const offset = circumference - (timeLeft / totalTime) * circumference;
-                timerProgress.style.strokeDashoffset = offset;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if (redirectUrl) {
+                // Update UI based on payment status
+                if (data.status === 'success') {
+                    // Success state
+                    paymentStatus.className = 'payment-status success fade-in';
+                    statusIcon.className = 'fas fa-check-circle status-icon';
+                    statusTitle.textContent = 'Payment Successful!';
+                    statusMessage.textContent = 'Your payment has been confirmed. You can now connect to Wi-Fi.';
+                    
+                    // Show receipt number if available
+                    if (data.receiptNumber) {
+                        receiptNumber.textContent = data.receiptNumber;
+                    } else {
+                        receiptRow.style.display = 'none';
+                    }
+                    
+                    paymentResult.textContent = 'Successful';
+                    
+                    // Show connect button and update it with redirect URL
+                    connectButton.classList.remove('hidden');
+                    connectButton.addEventListener('click', function() {
                         window.location.href = redirectUrl;
-                      } else {
-                        showAlert("Alert!", "Redirect URL not found.");
-                      }
+                    });
+                    
+                    // Hide try again section
+                    tryAgainSection.style.display = 'none';
+                    
+                    // Show success notification
+                    showAlert('Payment successful! You can now connect to Wi-Fi.', 'success');
+                    
+                    // Auto-redirect after 5 seconds
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                    }, 5000);
+                } else {
+                    // Error state
+                    paymentStatus.className = 'payment-status error fade-in';
+                    statusIcon.className = 'fas fa-times-circle status-icon';
+                    statusTitle.textContent = 'Payment Failed';
+                    statusMessage.textContent = data.message || 'There was an issue with your payment.';
+                    
+                    paymentResult.textContent = 'Failed';
+                    receiptRow.style.display = 'none';
+                    
+                    // Show try again section
+                    tryAgainSection.style.display = 'block';
+                    
+                    // Show error notification
+                    showAlert(data.message || 'Payment failed. Please try again.', 'error');
                 }
-            }, 1000);
-        }
-
-        // Simulate message reception for testing UI (uncomment if needed)
-        
-       /* setTimeout(() => {
-            socket.onmessage({data: JSON.stringify({type: "payment", status: "success"})});
-        }, 2000);
-        
-        setTimeout(() => {
-            socket.onmessage({data: JSON.stringify({type: "create_account", status: "success"})});
-        }, 4000);
-        
-        setTimeout(() => {
-            socket.onmessage({data: JSON.stringify({type: "login", status: "success"})});
-            startRedirectTimer()
-        }, 6000);*/
-
-        function showAlert(title, message){
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: 'error',
-                confirmButtonText: 'Go Back & Retry'
-            }).then(() => {
-                window.location.href = "http://"+previousUrl;
+            }
+            
+            function startCountdown() {
+                countdownInterval = setInterval(function() {
+                    timeLeft--;
+                    countdown.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        
+                        // If we haven't received a WebSocket message, show payment timeout
+                        if (paymentStatus.classList.contains('pending')) {
+                            paymentStatus.className = 'payment-status error fade-in';
+                            statusIcon.className = 'fas fa-clock status-icon';
+                            statusTitle.textContent = 'Payment Timeout';
+                            statusMessage.textContent = 'We haven\'t received your payment confirmation. Please try again.';
+                            
+                            // Show transaction details with timeout info
+                            transactionDetails.style.display = 'block';
+                            paymentResult.textContent = 'Timeout';
+                            receiptRow.style.display = 'none';
+                            
+                            // Show try again section
+                            tryAgainSection.style.display = 'block';
+                            
+                            // Hide timer section
+                            timerSection.classList.add('hidden');
+                        }
+                    }
+                }, 1000);
+            }
+            
+            // Function to show alerts
+            function showAlert(message, type) {
+                const alertContainer = document.getElementById('alert-container');
+                const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+                const icon = type === 'error' ? 'exclamation-circle' : 'check-circle';
+                
+                alertContainer.innerHTML = `
+                    <div class="alert ${alertClass}">
+                        <i class="fas fa-${icon}"></i>
+                        ${message}
+                    </div>
+                `;
+                
+                // Auto-remove after 5 seconds
+                setTimeout(function() {
+                    alertContainer.innerHTML = '';
+                }, 5000);
+            }
+            
+            // Try again button handler
+            document.getElementById('try-again-button').addEventListener('click', function() {
+                window.location.href = '/';
             });
-        }
-        
+            
+            // Connect to WebSocket on page load
+            connectWebSocket();
+        });
     </script>
 </body>
 </html>
