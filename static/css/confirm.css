@@ -251,15 +251,15 @@ main {
 /* Specific styling for each status */
 #paymentStatus.pending::before { background-color: #f59e0b; }
 #paymentStatus.success::before { color: #10b981; }
-#paymentStatus.failed { color: #ef4444; }
+#paymentStatus.failed::before { color: #ef4444; }
 
 #accountStatus.pending::before { background-color: #f59e0b; }
 #accountStatus.success::before { color: #10b981; }
-#accountStatus.failed { color: #ef4444; }
+#accountStatus.failed::before { color: #ef4444; }
 
 #loginStatus.pending::before { background-color: #f59e0b; }
 #loginStatus.success::before { color: #10b981; }
-#loginStatus.failed { color: #ef4444; }
+#loginStatus.failed::before { color: #ef4444; }
 
 /* Footer */
 .footer {
