@@ -21,6 +21,7 @@ const defaultOp = ":="
 // Common attribute names
 const (
 	AttrCleartextPassword = "Cleartext-Password"
+	AttrAuthType            = "Auth-Type"
 	AttrExpirationDate    = "Expiration"
 	AttrSessionTimeout    = "Session-Timeout"
 	AttrIdleTimeout       = "Idle-Timeout"
@@ -64,6 +65,12 @@ func CreateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 		if err != nil {
 			_ = tx.Rollback()
 			return gin.H{"error": "Failed to add password: " + err.Error()}, http.StatusInternalServerError
+		}
+	}else{
+		err = insertRadCheck(tx, input.Username, AttrAuthType, defaultOp, "Accept")
+		if err != nil {
+			_ = tx.Rollback()
+			return gin.H{"error": "Failed to add accept: " + err.Error()}, http.StatusInternalServerError
 		}
 	}
 

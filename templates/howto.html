@@ -359,7 +359,7 @@
 
         <div class="countdown-section">
             <div class="countdown-title">Auto-redirecting in:</div>
-            <div class="countdown" id="countdown">1:30</div>
+            <div class="countdown" id="countdown">1:00</div>
         </div>
 
         <div class="device-illustration">
@@ -396,7 +396,7 @@
                     <span class="step-title">You are already connected!</span>
                     <p class="step-description">
                         This device has been automatically connected.
-                        You can also click the "Exit" or "Connect Now" button below to exit the  countdown & page.
+                        You can also click "Connect Now" button below to exit the  countdown & page.
                         But please read this page to know how to connect your other devices.
                     </p>
                     <div class="action-buttons">
@@ -469,7 +469,7 @@
             document.getElementById('device-count-text').textContent = `${deviceCount} devices`;
             
             // Setup countdown
-            let timeLeft = 90; // 1 & half minutes
+            let timeLeft = 60; // 1 & half minutes
             const countdownEl = document.getElementById('countdown');
             
             function updateCountdown() {
