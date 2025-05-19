@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Handle the JSON response from your server
             if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
                 // Redirect to the success page
-                window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl; // important
+                window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity; // important
                 // Optionally reset the button if you navigate back later
                  payButton.disabled = false;
                  payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';

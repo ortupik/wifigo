@@ -359,7 +359,7 @@
 
         <div class="countdown-section">
             <div class="countdown-title">Auto-redirecting in:</div>
-            <div class="countdown" id="countdown">2:00</div>
+            <div class="countdown" id="countdown">1:30</div>
         </div>
 
         <div class="device-illustration">
@@ -396,9 +396,15 @@
                     <span class="step-title">You are already connected!</span>
                     <p class="step-description">
                         This device has been automatically connected.
-                        You can also click the "Connect Now" button below to exit the  countdown & page.
+                        You can also click the "Exit" or "Connect Now" button below to exit the  countdown & page.
                         But please read this page to know how to connect your other devices.
                     </p>
+                    <div class="action-buttons">
+                        <button id="connect-now" class="btn btn-primary">
+                            <i class="fas fa-wifi"></i>
+                            <span>Connect Now</span>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="step">
@@ -424,6 +430,13 @@
                         <strong>Important:</strong> Use the exact same phone number format you used during payment.
                     </div>
                 </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span class="step-title">In case you are logged out or switch devices</span>
+                    <p class="step-description">
+                        Enter your phone number in the login page, and you will be automatically logged in.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -437,7 +450,7 @@
         </div>
 
         <div class="action-buttons">
-            <button id="connect-now" class="btn btn-primary">
+            <button id="connect-now2" class="btn btn-primary">
                 <i class="fas fa-wifi"></i>
                 <span>Connect Now</span>
             </button>
@@ -456,7 +469,7 @@
             document.getElementById('device-count-text').textContent = `${deviceCount} devices`;
             
             // Setup countdown
-            let timeLeft = 120; // 2 minutes
+            let timeLeft = 90; // 1 & half minutes
             const countdownEl = document.getElementById('countdown');
             
             function updateCountdown() {
@@ -479,6 +492,9 @@
             
             // Connect button handler
             document.getElementById('connect-now').addEventListener('click', function() {
+                redirectToWifi();
+            });
+            document.getElementById('connect-now2').addEventListener('click', function() {
                 redirectToWifi();
             });
             
