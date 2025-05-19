@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize WebSocket connection
     let socket;
     let countdownInterval;
-    let timeLeft = 120; // 2 minutes countdown
+    let timeLeft = 60; // 2 minutes countdown
     
     function connectWebSocket() {
         // Use secure WebSocket if the page is loaded over HTTPS
