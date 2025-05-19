@@ -44,6 +44,7 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	r.LoadHTMLGlob("templates/*.html")
 
 	r.GET("/checkout", controller.CheckoutController)
+	r.GET("/howto", controller.HowtoController)
 	r.GET("/confirm", controller.ConfirmController)
 	r.POST("/plan_selection", func(c *gin.Context) {
 		// In a real application, this would handle payment processing

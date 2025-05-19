@@ -85,6 +85,11 @@ func ConfirmController(c *gin.Context) {
 	c.HTML(http.StatusOK, "confirm.html", nil)
 }
 
+func HowtoController(c *gin.Context) {
+	c.HTML(http.StatusOK, "howto.html", nil)
+}
+
+
 // renderErrorPage is a helper function to render the error page.
 func renderErrorPage(c *gin.Context, message, title string, status int) {
 	c.HTML(status, "error.html", gin.H{

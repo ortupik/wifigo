@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Auto-redirect after 5 seconds
             setTimeout(function() {
-                window.location.href = redirectUrl;
+                window.location.href = "/howto"; //redirectUrl for single device
             }, 5000);
         } else {
             // Error state
