@@ -120,8 +120,8 @@
                         paymentStatus.classList.remove('active');
                         paymentStatus.className = 'failed status';
                         paymentStatus.innerText = "Payment failed: " + msg.message;
-                        
-                        fallback.innerHTML = `<a href="//${previousUrl}">Go back to  </a>`;
+
+                        fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
                        // setActiveStep(0);
                     }
                 }
@@ -149,6 +149,7 @@
                         } else {
                             accountStatus.className = 'failed status';
                             accountStatus.innerText = "Account creation failed: " + msg.message;
+                            fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
                             setActiveStep(1);
                         }
                     }
