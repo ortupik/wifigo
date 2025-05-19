@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/confirm.css">
+    <script src='/static/js/sweetalert2.js'></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const redirectUrl = urlParams.get('redirect_url');
@@ -122,6 +123,8 @@
                         paymentStatus.innerText = "Payment failed: " + msg.message;
 
                         fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
+
+                        showAlert("Payment failed!", msg.message);
                        // setActiveStep(0);
                     }
                 }
@@ -151,6 +154,7 @@
                             accountStatus.innerText = "Account creation failed: " + msg.message;
                             fallback.innerHTML = `<a href="http://${previousUrl}">Click to go back & retry </a>`;
                             setActiveStep(1);
+                            showAlert("Account creation failed!", msg.message);
                         }
                     }
                 }
@@ -171,7 +175,7 @@
                     } else {
                         loginStatus.className = 'failed status';
                         loginStatus.innerText = "Automatic login failed";
-                        fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
+                        fallback.innerHTML = `<a href="${redirectUrl}">Click here to log in manually</a>`;
                         setActiveStep(2);
                     }
                 }
@@ -230,7 +234,7 @@
                     if (redirectUrl) {
                         window.location.href = redirectUrl;
                       } else {
-                        alert("No 'redirect_url' parameter found in the URL.");
+                        showAlert("Alert!", "Redirect URL not found.");
                       }
                 }
             }, 1000);
@@ -250,6 +254,17 @@
             socket.onmessage({data: JSON.stringify({type: "login", status: "success"})});
             startRedirectTimer()
         }, 6000);*/
+
+        function showAlert(title, message){
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'Go Back & Retry'
+            }).then(() => {
+                window.location.href = "http://"+previousUrl;
+            });
+        }
         
     </script>
 </body>
