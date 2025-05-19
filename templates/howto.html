@@ -245,10 +245,14 @@
         .info-box {
             background-color: #f8f9fa;
             border-radius: 8px;
-            padding: 0px 2rem;
+            padding: 1rem 2rem;
             margin: 1rem 0;
             margin-left: 2.5rem;
             border: 1px solid #e9ecef;
+        }
+
+        ul li {
+            padding: 1px 1rem;
         }
 
         .info-box p {
@@ -389,10 +393,11 @@
             <div class="instruction-steps">
                 <div class="step">
                     <span class="step-number">1</span>
-                    <span class="step-title">Connect this device first</span>
+                    <span class="step-title">You are already connected!</span>
                     <p class="step-description">
                         This device has been automatically connected.
-                        You can also click the "Connect Now" button below to exit the countdown.
+                        You can also click the "Connect Now" button below to exit the  countdown & page.
+                        But please read this page to know how to connect your other devices.
                     </p>
                 </div>
                 
@@ -407,17 +412,8 @@
                         <strong>Network Name:</strong> The same Wi-Fi network you're currently trying to access.
                     </div>
                 </div>
-                
                 <div class="step">
                     <span class="step-number">3</span>
-                    <span class="step-title">Open a browser on your other device(s)</span>
-                    <p class="step-description">
-                        Open any website in your browser. You'll be automatically redirected to the login page.
-                    </p>
-                </div>
-                
-                <div class="step">
-                    <span class="step-number">4</span>
                     <span class="step-title">Enter the phone number you used for payment</span>
                     <p class="step-description">
                         On the login page, enter the same phone number you used to pay for this service.
@@ -436,7 +432,7 @@
             <ul class="tip-list">
                 <li><strong>Sessions are linked:</strong> All devices share the same internet session, so if one device logs out, all devices will be logged out.</li>
                 <li><strong>Maximum devices:</strong> You can only connect the number of devices you paid for. Additional devices will require a separate purchase.</li>
-                <li><strong>Need help?</strong> If you experience any issues connecting your devices, please contact our support team for assistance.</li>
+               <!---<li><strong>Need help?</strong> If you experience any issues connecting your devices, please contact our support team for assistance.</li> -->
             </ul>
         </div>
 
@@ -452,8 +448,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Get URL params
             const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('redirect_url');
-            const deviceCount = urlParams.get('devices') || 2;
+            const redirectUrl = "{{ .redirectUrl }}";
+            const deviceCount = parseInt("{{ .devices }}") || 2;
             
             // Update device count displays
             document.getElementById('device-count').innerHTML = `<i class="fas fa-devices"></i>${deviceCount} devices`;

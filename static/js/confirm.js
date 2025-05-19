@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const clientIP = urlParams.get('ip');
     const redirectUrl = urlParams.get('redirect_url');
+    const devices = urlParams.get('devices');
     
     // Elements
     const paymentStatus = document.getElementById('payment-status');
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Auto-redirect after 5 seconds
             setTimeout(function() {
-                window.location.href = "/howto"; //redirectUrl for single device
+                window.location.href = "/howto?redirectUrl="+redirectUrl+"&devices="+devices; //redirectUrl for single device
             }, 5000);
         } else {
             // Error state

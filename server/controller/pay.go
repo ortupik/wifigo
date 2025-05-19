@@ -86,7 +86,12 @@ func ConfirmController(c *gin.Context) {
 }
 
 func HowtoController(c *gin.Context) {
-	c.HTML(http.StatusOK, "howto.html", nil)
+	devices := c.Query("devices")
+	redirectUrl := c.Query("redirectUrl")
+	c.HTML(http.StatusOK, "howto.html", gin.H{
+		"redirectUrl": redirectUrl,  
+		"devices":     devices,      
+	})
 }
 
 
