@@ -65,11 +65,11 @@ func (h *DatabaseHandler) handleSaveMpesaPayment(ctx context.Context, raw json.R
 		return fmt.Errorf("failed to save payment ID: %w", err)
 	}
 
-	ip := resp["ip"].(string)
+	//ip := resp["ip"].(string)
 	paymentId := resp["paymentID"].(int)
 
 	log.Printf("Payment saved to database: %v", paymentId)
 
-	h.wsHub.SendToIP(ip, []byte(`{"type":"payment","status":"success","message":"Payment received"}`))
+	//h.wsHub.SendToIP(ip, []byte(`{"type":"payment","status":"success","message":"Payment received"}`))
 	return nil
 }
