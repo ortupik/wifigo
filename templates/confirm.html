@@ -118,6 +118,7 @@
                     } else {
                         paymentStatus.className = 'failed status';
                         paymentStatus.innerText = "Payment failed: " + msg.message;
+                        fallback.innerHTML = `<a href="/manual-login">Click here to log in manually</a>`;
                         setActiveStep(0);
                     }
                 }

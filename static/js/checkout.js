@@ -126,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect to the success page
                 window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl; // important
                 // Optionally reset the button if you navigate back later
-                // payButton.disabled = false;
-                // payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
+                 payButton.disabled = false;
+                 payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
             } else {
                 // Handle M-Pesa business logic errors (e.g., insufficient funds)
                 showAlert("Something went wrong, re-enter phone number!", "error"); // show to user
