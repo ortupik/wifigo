@@ -77,7 +77,7 @@ func main() {
 		Description: "Main office router",
 	}
 
-	store.DeleteConfig(badger.DeviceConfigType, "");
+	store.DeleteConfig(badger.DeviceConfigType, "mikrotik1");
 	var deviceWrapper badger.DeviceConfigWrapper
 	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
 	if err != nil {
