@@ -222,7 +222,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 			}
 		}
 	}else{
-		err = insertRadCheck(tx, input.Username, AttrAuthType, defaultOp, "Accept")
+		err = insertRadCheck(tx, username, AttrAuthType, defaultOp, "Accept")
 		if err != nil {
 			_ = tx.Rollback()
 			return gin.H{"error": "Failed to add accept: " + err.Error()}, http.StatusInternalServerError
