@@ -23,7 +23,7 @@ func LoginHotspotDeviceByAddress(manager *mikrotik.Manager, payload dto.Mikrotik
 
 	// Check if we found any hosts
 	if len(hosts) == 0 {
-		return errors.New("no hotspot host found with the specified address: "+payload.Address)
+		return errors.New("no hotspot host found with address: "+payload.Address)
 	}
 
 	// Extract the to-address
@@ -45,6 +45,8 @@ func LoginHotspotDeviceByAddress(manager *mikrotik.Manager, payload dto.Mikrotik
 		"=ip=" + toAddress,
 		"=user=" + payload.Username,
 	}
+
+	fmt.Printf("Login arguments: %v\n", loginArgs)
 	
 	// Add password if provided
 	if payload.Password != "" {
