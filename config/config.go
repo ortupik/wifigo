@@ -41,6 +41,7 @@ type Configuration struct {
 	Security SecurityConfig
 	ViewConfig ViewConfig
 	Auth     AuthConfig
+	Badger   BadgerDBConfig
 }
 
 type AuthConfig struct {

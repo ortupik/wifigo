@@ -55,7 +55,7 @@ func main() {
 		handleError(err, "Failed to initialize Redis")
 	}
 
-	store, err := badger.NewStore("./data/badger")
+	store, err := badger.NewStore("")
 	handleError(err, "Failed to initialize BadgerDb")
 	defer store.Close()
 

@@ -138,7 +138,7 @@ type Store struct {
 
 // NewStore creates a new storage instance
 func NewStore(dbPath string) (*Store, error) {
-	opts := badger.DefaultOptions(dbPath)
+	opts := badger.DefaultOptions(gconfig.GetConfig().Badger.DataDir)
 	opts.Logger = nil // Disable logging
 
 	db, err := badger.Open(opts)
