@@ -80,7 +80,7 @@ func (h *DatabaseHandler) handleSaveMpesaPayment(ctx context.Context, raw json.R
     case 1032:
         message = "The request was canceled by the user"
     case 1037:
-        message = "Phone cannot be reached!"
+        message = "Your M-Pesa phone cannot be reached!"
     case 2001:
         message = "Wrong PIN provided"
     case 17:

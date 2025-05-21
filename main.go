@@ -69,7 +69,7 @@ func main() {
 	sampleDevice := gconfig.DeviceConfig{
 		ID:          "mikrotik1",
 		Name:        "Office Router",
-		Address:     "192.168.6.1:8728",
+		Address:     "10.0.0.2:8728",
 		Username:    "admin",
 		Password:    "12345678",
 		PoolSize:    5,
@@ -77,7 +77,7 @@ func main() {
 		Description: "Main office router",
 	}
 
-	//store.DeleteConfig(badger.DeviceConfigType, "");
+	store.DeleteConfig(badger.DeviceConfigType, "");
 	var deviceWrapper badger.DeviceConfigWrapper
 	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
 	if err != nil {
