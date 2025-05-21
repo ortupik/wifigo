@@ -1,17 +1,15 @@
 package queue
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
-	"time"
 
 	"github.com/hibiken/asynq"
 	"github.com/ortupik/wifigo/mikrotik"
+	"github.com/ortupik/wifigo/server/dto"
+	job "github.com/ortupik/wifigo/server/job"
 	"github.com/ortupik/wifigo/websocket"
 )
 
@@ -19,43 +17,67 @@ import (
 type MikrotikHandler struct {
 	manager *mikrotik.Manager
 	wsHub   *websocket.Hub
+	actionHandlers map[string]func(ctx context.Context, raw json.RawMessage) error
 }
 
 func NewMikrotikHandler(manager *mikrotik.Manager, wsHub *websocket.Hub) *MikrotikHandler {
-	return &MikrotikHandler{
+	h := &MikrotikHandler{
+		actionHandlers: make(map[string]func(ctx context.Context, raw json.RawMessage) error),
+		wsHub:          wsHub,
 		manager: manager,
-		wsHub:   wsHub,
 	}
+	h.registerHandlers()
+	return h
+}
+
+func (h *MikrotikHandler) registerHandlers() {
+	h.actionHandlers[ActionMikrotikLoginUser] = h.handleLoginUser
+	//h.actionHandlers[ActionMikrotikCommand] = h.handleExecuteCommand
 }
 
 func (h *MikrotikHandler) HandleTask(ctx context.Context, task *asynq.Task) error {
-	var wrapper GenericTaskPayload
-	if err := json.Unmarshal(task.Payload(), &wrapper); err != nil {
-		return fmt.Errorf("failed to unmarshal generic task payload: %w", err)
+
+	var payload GenericTaskPayload
+	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
+		return fmt.Errorf("failed to unmarshal task payload: %w", err)
 	}
 
-	if wrapper.System != "mikrotik" {
-		return fmt.Errorf("invalid system for MikrotikHandler: %s", wrapper.System)
+	if payload.System != "mikrotik" {
+		return fmt.Errorf("invalid system for MikrotikHandler: %s", payload.System)
 	}
 
-	var cmdPayload MikrotikCommandPayload
-	if err := json.Unmarshal(wrapper.Payload, &cmdPayload); err != nil {
-		return fmt.Errorf("failed to unmarshal mikrotik command payload: %w", err)
-	}
+	log.Printf("Processing MiktoTik operation: %s", payload.Action)
 
-	err := h.executeCommand(ctx, &cmdPayload)
-	if err != nil {
-		if ShouldNotRetryError(err) {
+	handlerFunc, ok := h.actionHandlers[payload.Action]
+	if !ok {
+		return fmt.Errorf("unknown mikrotik action: %s", payload.Action)
+	}
+	return handlerFunc(ctx, payload.Payload)
+
+}
+
+func (h *MikrotikHandler) handleLoginUser(ctx context.Context, raw json.RawMessage) error {
+    var data dto.MikrotikLogin
+    if err := json.Unmarshal(raw, &data); err != nil {
+        return fmt.Errorf("failed to decode payload: %w", err)
+    }
+
+    err := job.LoginHotspotDeviceByAddress(h.manager, data)
+    if err != nil {
+		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "failed", "message": "Could not log you in!"}`)) )
+        if ShouldNotRetryError(err) {
 			return asynq.SkipRetry
 		}
-		return err
+		return fmt.Errorf("failed to login user: %w", err)
+    }else{
+		h.wsHub.SendToIP(data.Address,[]byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": "You are now logged in"}`) ))		
+      return nil
 	}
 
-	return nil
 }
 
 
-func (h *MikrotikHandler) executeCommand(ctx context.Context, payload *MikrotikCommandPayload) error {
+/*func (h *MikrotikHandler) handleExecuteCommand(ctx context.Context, payload *MikrotikCommandPayload) error {
 	log.Printf("Executing MikroTik command: %s on device: %s", payload.Command, payload.DeviceID)
 
 	pool, err := h.manager.GetDevice(payload.DeviceID)
@@ -67,11 +89,7 @@ func (h *MikrotikHandler) executeCommand(ctx context.Context, payload *MikrotikC
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}else{
-		fmt.Println("result",result)
-		for _, re := range result {
-			fmt.Println(re)
-		}
-		h.wsHub.SendToIP(payload.Ip, []byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": %q}`, payload.Command)))
+		h.wsHub.SendToIP(payload.Ip, []byte(fmt.Sprintf(`{"type":"command", "status": "success", "result": %q}`,result)))
 	}
 
 	callbackPayload := map[string]interface{}{
@@ -111,4 +129,4 @@ func (h *MikrotikHandler) executeCommand(ctx context.Context, payload *MikrotikC
 
 	
 	return nil
-}
+}*/

@@ -1,4 +1,4 @@
-package handler
+package job
 
 import (
 	"github.com/ortupik/wifigo/config"
