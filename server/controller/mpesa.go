@@ -24,7 +24,7 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 	req := dto.STKPushRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "err": err.Error()})
 		return
 	}
 
