@@ -55,7 +55,7 @@ func main() {
 		handleError(err, "Failed to initialize Redis")
 	}
 
-	store, err := badger.NewStore("")
+	store, err := badger.NewStore("~/data/")
 	handleError(err, "Failed to initialize BadgerDb")
 	defer store.Close()
 
@@ -77,8 +77,9 @@ func main() {
 		Description: "Main office router",
 	}
 
-	//store.DeleteConfig(badger.DeviceConfigType, "mikrotik1");
-	/*var deviceWrapper badger.DeviceConfigWrapper
+	store.DeleteConfig(badger.DeviceConfigType, "mikrotik1");
+
+	var deviceWrapper badger.DeviceConfigWrapper
 	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
 	if err != nil {
 		if err.Error() == "device config not found: mikrotik1" {
@@ -90,7 +91,7 @@ func main() {
 	} else {
 		existingDevice := deviceWrapper.DeviceConfig
 		log.Printf("Found existing device config: %+v", existingDevice)
-	}*/
+	}
 
 	currentDevice, _ := mikrotikManager.GetDevice(sampleDevice.ID)
 	if currentDevice == nil {
