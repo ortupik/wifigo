@@ -67,6 +67,10 @@ func (h *MikrotikHandler) executeCommand(ctx context.Context, payload *MikrotikC
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}else{
+		fmt.Println("result",result)
+		for _, re := range result {
+			fmt.Println(re)
+		}
 		h.wsHub.SendToIP(payload.Ip, []byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": %q}`, payload.Command)))
 	}
 
