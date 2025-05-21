@@ -23,7 +23,7 @@ func LoginHotspotDeviceByAddress(manager *mikrotik.Manager, payload dto.Mikrotik
 
 	// Check if we found any hosts
 	if len(hosts) == 0 {
-		return errors.New("no hotspot host found with the specified address")
+		return errors.New("no hotspot host found with the specified address: "+payload.Address)
 	}
 
 	// Extract the to-address
