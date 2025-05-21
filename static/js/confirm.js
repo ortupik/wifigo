@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tryAgainSection.style.display = 'none';
             
             // Show success notification
-            showAlert('Payment successful! You can now connect to Wi-Fi.', 'success');
+            showAlert('Payment successful! You can now connected', 'success');
             
             // Auto-redirect after 5 seconds
             setTimeout(function() {
