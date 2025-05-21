@@ -71,7 +71,7 @@ func (c *Client) EnqueueTask(ctx context.Context, taskType string, payload inter
 }
 
 // EnqueueMikrotikCommand enqueues a MikroTik command task
-func (c *Client) EnqueueMikrotikCommand(ctx context.Context, payload *MikrotikCommandPayload, priority string) (*asynq.TaskInfo, error) {
+func (c *Client) EnqueueMikrotikCommand(ctx context.Context, action string, payload interface{}, priority string) (*asynq.TaskInfo, error) {
 	raw, err := json.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal MikrotikCommandPayload: %w", err)
@@ -79,9 +79,8 @@ func (c *Client) EnqueueMikrotikCommand(ctx context.Context, payload *MikrotikCo
 
 	genericPayload := GenericTaskPayload{
 		System:  "mikrotik",
-		Action:  "command",
+		Action:  action,
 		Payload: raw,
-		Ip:      payload.Ip,
 	}
 	return c.EnqueueTask(ctx, TypeMikrotikCommand, genericPayload, priority)
 }

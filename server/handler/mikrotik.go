@@ -156,7 +156,7 @@ func (h *MikrotikHandler) ExecuteCommand(c *gin.Context) {
 	}
 	
 	// Enqueue command
-	taskInfo, err := h.queue.EnqueueMikrotikCommand(c.Request.Context(), payload, req.Priority)
+	taskInfo, err := h.queue.EnqueueMikrotikCommand(c.Request.Context(), "", payload, req.Priority)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to queue command: " + err.Error(),
