@@ -64,7 +64,6 @@ func main() {
 	defer mikrotikManager.Close()
 
 	// Load saved MikroTik configurations
-	// This would typically be done by loading from the database
 	// For demonstration, we'll add a sample device
 	sampleDevice := gconfig.DeviceConfig{
 		ID:          "mikrotik1",
