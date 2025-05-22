@@ -304,9 +304,7 @@ func loadRDBMSConfig(prefix string) (rdbmsConfig RDBMSConfig, err error) {
 
 
 func databaseBadger() (databaseConfig DatabaseConfig, err error) {
-	
 	databaseConfig.BadgerDB.Env.DataDir = strings.TrimSpace(os.Getenv("DataDir"))
-
 	return
 }
 

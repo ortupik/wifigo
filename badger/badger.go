@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 	"time"
+	"strings"
+	"os"
 
 	"github.com/dgraph-io/badger/v3"
 	gconfig "github.com/ortupik/wifigo/config" // Assuming your main config package
@@ -137,9 +139,9 @@ type Store struct {
 }
 
 // NewStore creates a new storage instance
-func NewStore(dbPath string) (*Store, error) {
-	opts := badger.DefaultOptions(dbPath)
-	opts.Logger = nil // Disable logging
+func NewStore() (*Store, error) {
+	opts := badger.DefaultOptions(strings.TrimSpace(os.Getenv("DataDir")))
+	opts.Logger = nil 
 
 	db, err := badger.Open(opts)
 	if err != nil {
