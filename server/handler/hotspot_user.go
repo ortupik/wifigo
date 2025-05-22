@@ -206,6 +206,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 
 	// Update password if provided (nil means no change, empty string means remove password)
 	if input.Password != nil {
+		fmt.Println("input.Password: ", *input.Password)
 		// Delete existing password
 		err = deleteRadCheckAttributeTx(tx, username, AttrCleartextPassword)
 		if err != nil {
@@ -222,6 +223,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 			}
 		}
 	}else{
+		fmt.Println("Inserting Radcheck Accept"+username)
 		err = insertRadCheck(tx, username, AttrAuthType, defaultOp, "Accept")
 		if err != nil {
 			_ = tx.Rollback()
