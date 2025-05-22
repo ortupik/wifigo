@@ -204,6 +204,9 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 		}
 	}()
 
+	// Track if Auth-Type Accept was added (when password is nil)
+	authTypeAdded := false
+
 	// Update password if provided (nil means no change, empty string means remove password)
 	if input.Password != nil {
 		fmt.Println("input.Password: ", *input.Password)
@@ -222,13 +225,14 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 				return gin.H{"error": "Failed to update password: " + err.Error()}, http.StatusInternalServerError
 			}
 		}
-	}else{
-		fmt.Println("Inserting Radcheck Accept"+username)
+	} else {
+		fmt.Println("Inserting Radcheck Accept" + username)
 		err = insertRadCheck(tx, username, AttrAuthType, defaultOp, "Accept")
 		if err != nil {
 			_ = tx.Rollback()
 			return gin.H{"error": "Failed to add accept: " + err.Error()}, http.StatusInternalServerError
 		}
+		authTypeAdded = true
 	}
 
 	// Update check attributes if provided (nil means no change, empty slice means remove all non-password checks)
@@ -241,7 +245,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 		}
 
 		// Create a map for easier lookup and tracking processed attributes
-		currentAttrMap := make(map[string] radiusmodel.RadCheck)
+		currentAttrMap := make(map[string]radiusmodel.RadCheck)
 		for _, attr := range currentAttrs {
 			if attr.Attribute != AttrCleartextPassword { // Skip password as it's handled separately
 				currentAttrMap[attr.Attribute] = attr
@@ -282,9 +286,12 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 			}
 		}
 
-		// Delete attributes not in the input (and not password)
+		// Delete attributes not in the input (and not password, and not Auth-Type if it was just added)
 		for attrName, attr := range currentAttrMap {
-			if attr.Attribute != AttrCleartextPassword && !processedAttrs[attrName] {
+			shouldPreserve := attr.Attribute == AttrCleartextPassword || 
+							 (authTypeAdded && attr.Attribute == AttrAuthType)
+			
+			if !shouldPreserve && !processedAttrs[attrName] {
 				err = deleteRadCheckAttributeTx(tx, username, attrName)
 				if err != nil {
 					_ = tx.Rollback()
@@ -306,7 +313,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 		}
 
 		// Create a map for easier lookup
-		currentAttrMap := make(map[string] radiusmodel.RadReply)
+		currentAttrMap := make(map[string]radiusmodel.RadReply)
 		for _, attr := range currentAttrs {
 			currentAttrMap[attr.Attribute] = attr
 		}
@@ -369,7 +376,7 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 		}
 
 		// Create a map for easier lookup
-		currentGroupMap := make(map[string] radiusmodel.RadUserGroup)
+		currentGroupMap := make(map[string]radiusmodel.RadUserGroup)
 		for _, group := range currentGroups {
 			currentGroupMap[group.Groupname] = group
 		}
