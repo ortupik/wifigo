@@ -12,12 +12,21 @@ import (
 	"github.com/ortupik/wifigo/server/handler"
 )
 
+
 type MpesaController struct {
 	MpesaStkHandler *handler.MpesaStkHandler
 }
 
 func NewMpesaController() *MpesaController {
-	return &MpesaController{MpesaStkHandler: &handler.MpesaStkHandler{}}
+	mpesaStkhandler, err := handler.NewMpesaStkHandler()
+	if(err != nil) {
+		fmt.Println(err)
+		return nil
+	}
+
+	return &MpesaController{
+		MpesaStkHandler : mpesaStkhandler,
+	}
 }
 
 func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {

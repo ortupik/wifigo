@@ -14,7 +14,7 @@ import (
 	"github.com/ortupik/wifigo/mikrotik"
 	"github.com/ortupik/wifigo/queue"
 	nconfig "github.com/ortupik/wifigo/server/config"
-	migrate "github.com/ortupik/wifigo/server/database/migrate"
+	//migrate "github.com/ortupik/wifigo/server/database/migrate"
 	"github.com/ortupik/wifigo/server/router"
 	service "github.com/ortupik/wifigo/server/service"
 	"github.com/ortupik/wifigo/websocket"
@@ -43,7 +43,7 @@ func main() {
 	if gconfig.IsRDBMS() {
 		handleError(gdatabase.InitDB(), "Failed to initialize RDBMS")
 		// Run migrations
-		handleError(migrate.DropAllTables(), "Failed to drop app migrations")
+		/*handleError(migrate.DropAllTables(), "Failed to drop app migrations")
 		//handleError(migrate.DropRadiusTables(), "Failed to drop radius migrations")
 		handleError(migrate.StartMigration(*configure), "Failed to run app migrations")
 		//handleError(migrate.MigrateRadiusModels(*configure), "Failed to run radius migrations")
