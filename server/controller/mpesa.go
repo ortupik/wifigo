@@ -32,13 +32,19 @@ func NewMpesaController() *MpesaController {
 func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 
 	req := dto.STKPushRequest
+	username := req.Username
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "err": err.Error()})
 		return
 	}
 
-	fmt.Printf("req %v",req)
+	//fetch isp name based on dns_name isp_id may not be needed
+	if(username == ""){
+        username = req.Phone + "@Tecsurf"
+	}
+
+	isHomeUser := false
 
 	expirationStatus, err := handler.IsUserExpired(req.Username)
 	if err == nil {
@@ -74,9 +80,6 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		})
 		return
 	}
-
-	username := req.Phone + "@Tecsurf"
-	isHomeUser := false
 
 	order := model.Order{
 		OrderNumber:       fmt.Sprintf("ORD-%d", time.Now().UnixNano()),
