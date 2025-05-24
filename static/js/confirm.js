@@ -106,7 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Auto-redirect after 5 seconds
             setTimeout(function() {
-                window.location.href = "/howto?redirectUrl="+redirectUrl+"&devices="+devices; //redirectUrl for single device
+                if(devices > 1){
+                   // window.location.href = "/howto?redirectUrl="+redirectUrl+"&devices="+devices; //redirectUrl for single device
+                }else{
+                   // window.location.href = redirectUrl + "/status?voucher="+data.;
+                }
             }, 5000);
         } else {
             // Error state

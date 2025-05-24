@@ -1,16 +1,56 @@
-package job
+package service
 
 import (
 	"errors"
 	"fmt"
-
-	"github.com/ortupik/wifigo/mikrotik"
 	"github.com/ortupik/wifigo/server/dto"
 )
 
-func LoginHotspotDeviceByAddress(manager *mikrotik.Manager, payload dto.MikrotikLogin) error {
+// ExecuteOnDevice executes a command on a specific device
+func (s *MikroTikMangerService) ExecuteOnDevice(deviceID, command string, args ...string) ([]map[string]string, error) {
+	pool, err := s.GetDevicePool(deviceID)
+	if err != nil {
+		return nil, err
+	}
 
-	pool, err := manager.GetDevice(payload.DeviceID)
+	return pool.Execute(command, args...)
+}
+
+// TestDeviceConnection tests the connection to a specific device
+func (s *MikroTikMangerService) TestDeviceConnection(deviceID string) error {
+	pool, err := s.GetDevicePool(deviceID)
+	if err != nil {
+		return err
+	}
+
+	// Try a simple command to test connection
+	_, err = pool.Execute("/system/identity/print")
+	return err
+}
+
+// GetDeviceStats gets basic statistics from a device
+func (s *MikroTikMangerService) GetDeviceStats(deviceID string) (map[string]string, error) {
+	pool, err := s.GetDevicePool(deviceID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get system resource information
+	resources, err := pool.Execute("/system/resource/print")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resources) > 0 {
+		return resources[0], nil
+	}
+
+	return make(map[string]string), nil
+}
+
+func LoginHotspotDeviceByAddress(s *MikroTikMangerService, payload dto.MikrotikLogin) error {
+
+	pool, err := s.GetDevicePool(payload.DeviceID)
 	if err != nil {
 		return fmt.Errorf("failed to get device: %w", err)
 	}

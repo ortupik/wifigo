@@ -3,29 +3,26 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
+	storage "github.com/ortupik/wifigo/badger"
 	gconfig "github.com/ortupik/wifigo/config"
 	gcontroller "github.com/ortupik/wifigo/controller"
 	glib "github.com/ortupik/wifigo/lib"
 	gmiddleware "github.com/ortupik/wifigo/lib/middleware"
+	queue "github.com/ortupik/wifigo/queue"
 	"github.com/ortupik/wifigo/server/controller"
 	gservice "github.com/ortupik/wifigo/service"
-	storage "github.com/ortupik/wifigo/badger"
-	queue "github.com/ortupik/wifigo/queue"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	mikrotik "github.com/ortupik/wifigo/mikrotik"
 	handler "github.com/ortupik/wifigo/server/handler"
 	"github.com/ortupik/wifigo/websocket"
-	mikrotik "github.com/ortupik/wifigo/mikrotik"
 )
 
-
-
 var (
-	mikrotikHandler     *handler.MikrotikHandler
-	mpesaHandler        *handler.MpesaHandler
+	mikrotikController   *controller.MikroTikController
 	mpesaCallbackHandler *handler.MpesaCallbackHandler
-	mpesaController     *controller.MpesaController // Use the correct controller package
+	mpesaController      *controller.MpesaController // Use the correct controller package
 )
 
 // SetupRouter sets up all the routes
@@ -46,23 +43,6 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	r.GET("/checkout", controller.CheckoutController)
 	r.GET("/howto", controller.HowtoController)
 	r.GET("/confirm", controller.ConfirmController)
-	r.POST("/plan_selection", func(c *gin.Context) {
-		// In a real application, this would handle payment processing
-		// For now, we'll just redirect to a success page
-		
-		c.HTML(200, "plan_selection.html", gin.H{
-			"title": "Payment Successful",
-		})
-	})
-	r.GET("/process-payment", func(c *gin.Context) {
-		// In a real application, this would handle payment processing
-		// For now, we'll just redirect to a success page
-		
-		c.HTML(200, "payment_success.html", gin.H{
-			"title": "Payment Successful",
-		})
-	})
-
 
 	// Setup session middleware
 	cookieStore := cookie.NewStore([]byte("a1b2c3d4e5f678901234567890abcdef0123456789abcdef0123456789abcdef")) // Use session secret from config(configure.Auth.SessionSecret)
@@ -73,12 +53,10 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	})
 
 	// Initialize handlers and controllers
-	mikrotikHandler = handler.NewMikrotikHandler(store, manager, queueClient)
-	mpesaCallbackHandler = handler.NewMpesaCallbackHandler(queueClient, wsHub)
-	mpesaHandler, _  := handler.NewMpesaHandler()
-	mpesaController = controller.NewMpesaController(mpesaHandler) // Use the correct controller package
+	mpesaCallbackHandler := handler.NewMpesaCallbackHandler(queueClient, wsHub)
+	mpesaController = controller.NewMpesaController()
+	mikrotikController = controller.NewMikroTikController(manager)
 
-	
 	// Disable trusted proxies for security unless specifically configured
 	if err := r.SetTrustedProxies(nil); err != nil {
 		return nil, err
@@ -150,13 +128,13 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	r.GET("", controller.APIStatus)
 
 	// Register all API routes
-	registerAPIRoutes(r, configure, mikrotikHandler, mpesaHandler, mpesaCallbackHandler)
+	registerAPIRoutes(r, configure, mikrotikController, mpesaController, mpesaCallbackHandler)
 
 	return r, nil
 }
 
 // registerAPIRoutes sets up all API routes
-func registerAPIRoutes(r *gin.Engine, configure *gconfig.Configuration, mikrotikHandler *handler.MikrotikHandler, mpesaHandler *handler.MpesaHandler, mpesaCallbackHandler *handler.MpesaCallbackHandler) {
+func registerAPIRoutes(r *gin.Engine, configure *gconfig.Configuration, mikrotikController *controller.MikroTikController, mpesaController *controller.MpesaController, mpesaCallbackHandler *handler.MpesaCallbackHandler) {
 	v1 := r.Group("/api/v1/")
 
 	// Public routes (no authentication required)
@@ -289,9 +267,10 @@ func registerMpesaRoutes(v1 *gin.RouterGroup, configure *gconfig.Configuration) 
 	mpesaGroup := v1.Group("mpesa")
 	mpesaGroup.POST("/checkout", mpesaController.ExpressStkHandler)
 	mpesaGroup.GET("/transaction", mpesaController.GetTransactionStatus)
-	mpesaGroup.POST("/callback", mpesaCallbackHandler.MpesaHandlerCallback)
+	mpesaGroup.POST("/callback", mpesaCallbackHandler.MpesaStkHandlerCallback)
 	mpesaGroup.Use(createAuthMiddleware(configure)...)
 }
+
 // registerResourceRoutes sets up resource-related routes
 func registerResourceRoutes(v1 *gin.RouterGroup, configure *gconfig.Configuration) {
 	// Test JWT endpoint
@@ -320,13 +299,24 @@ func registerHotspotRoutes(v1 *gin.RouterGroup, configure *gconfig.Configuration
 }
 
 func registerMikrotikRoutes(v1 *gin.RouterGroup, configure *gconfig.Configuration) {
+	// Create mikrotik API group
 	mikrotikAPI := v1.Group("/mikrotik")
 	mikrotikAPI.Use(createAuthMiddleware(configure)...)
-	mikrotikAPI.GET("/devices", mikrotikHandler.ListDevices)
-	mikrotikAPI.POST("/devices/:id/select", mikrotikHandler.SelectDevice)
-	mikrotikAPI.GET("/devices/selected", mikrotikHandler.GetSelectedDevice)
-	mikrotikAPI.POST("/command", mikrotikHandler.ExecuteCommand)
-	mikrotikAPI.GET("/command/status/:taskID", mikrotikHandler.GetCommandStatus)
+
+	// Device CRUD routes
+	mikrotikAPI.GET("/devices", mikrotikController.GetDevices)
+	mikrotikAPI.POST("/devices", mikrotikController.CreateDevice)
+	mikrotikAPI.GET("/devices/:id", mikrotikController.GetDevice)
+	mikrotikAPI.PUT("/devices/:id", mikrotikController.UpdateDevice)
+	mikrotikAPI.DELETE("/devices/:id", mikrotikController.DeleteDevice)
+
+	// Device status routes
+	mikrotikAPI.PATCH("/devices/:id/status", mikrotikController.UpdateDeviceStatus)
+	mikrotikAPI.GET("/devices/status/:status", mikrotikController.GetDevicesByStatus)
+
+	// Device statistics and utilities
+	mikrotikAPI.GET("/devices/stats", mikrotikController.GetDeviceStats)
+	mikrotikAPI.POST("/devices/:id/test", mikrotikController.TestDeviceConnection)
 }
 
 // registerPlaygroundRoutes sets up development and testing routes
@@ -367,4 +357,3 @@ func registerBasicAuthRoutes(v1 *gin.RouterGroup, configure *gconfig.Configurati
 		basicAuthGroup.Use(gin.BasicAuth(gin.Accounts{user: pass}))
 	}
 }
-

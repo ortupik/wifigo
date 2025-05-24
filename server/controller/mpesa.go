@@ -2,21 +2,22 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
-    "time"
 	"math"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/ortupik/wifigo/server/database/model"
 	"github.com/ortupik/wifigo/server/dto"
 	"github.com/ortupik/wifigo/server/handler"
-	"github.com/ortupik/wifigo/server/database/model"
 )
 
 type MpesaController struct {
-	mpesaHandler *handler.MpesaHandler
+	MpesaStkHandler *handler.MpesaStkHandler
 }
 
-func NewMpesaController(mpesaHandler *handler.MpesaHandler) *MpesaController {
-	return &MpesaController{mpesaHandler: mpesaHandler}
+func NewMpesaController() *MpesaController {
+	return &MpesaController{MpesaStkHandler: &handler.MpesaStkHandler{}}
 }
 
 func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
@@ -29,26 +30,26 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 	}
 
 	expirationStatus, err := handler.IsUserExpired(req.Username)
-	if(err == nil){
+	if err == nil {
 		if expirationStatus == "NOT_EXPIRED" {
 			c.JSON(http.StatusConflict, gin.H{"error": "Active subscription already exists"})
 			return
 		}
 	}
 
-	plan, err := mc.mpesaHandler.GetServicePlan(req.PlanID)
+	plan, err := mc.MpesaStkHandler.GetServicePlan(req.PlanID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invalid plan"})
 		return
 	}
 
-    amount := plan.Price 
+	amount := plan.Price
 
 	if req.DeviceCount > 2 {
 		amount = int(math.Round(float64(amount) * 0.7)) // Apply 30% discount
 	}
 
-	res, err := mc.mpesaHandler.SendStkPush(req.Phone, fmt.Sprintf("%d", amount))
+	res, err := mc.MpesaStkHandler.SendStkPush(req.Phone, fmt.Sprintf("%d", amount))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "STK Push failed: " + err.Error()})
 		return
@@ -85,7 +86,7 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		MerchantRequestID: fmt.Sprint(res["MerchantRequestID"]),
 		ResponseCode:      fmt.Sprint(res["ResponseCode"]),
 	}
-	
+
 	handler.CreateOrder(c, nil, order)
 
 }

@@ -35,8 +35,8 @@ func NewMpesaCallbackHandler(queueClient *queue.Client, wsHub *websocket.Hub) *M
 	}
 }
 
-// MpesaHandlerCallback processes incoming M-Pesa STK push callbacks.
-func (h *MpesaCallbackHandler) MpesaHandlerCallback(c *gin.Context) {
+// MpesaStkHandlerCallback processes incoming M-Pesa STK push callbacks.
+func (h *MpesaCallbackHandler) MpesaStkHandlerCallback(c *gin.Context) {
 	// 1. Parse raw Safaricom callback
 	var raw map[string]interface{}
 	if err := c.ShouldBindJSON(&raw); err != nil {

@@ -14,38 +14,38 @@ import (
 	"github.com/mediocregopher/radix/v4"
 
 	gconfig "github.com/ortupik/wifigo/config"
-	nconfig "github.com/ortupik/wifigo/server/config"
 	gdatabase "github.com/ortupik/wifigo/database"
+	nconfig "github.com/ortupik/wifigo/server/config"
 	"github.com/ortupik/wifigo/server/database/model"
 )
 
 // MpesaConfig holds the general M-Pesa configuration loaded from Viper.
 type MpesaConfig struct {
-	Shortcode      string `mapstructure:"short_code"`
-	Passkey        string `mapstructure:"passkey"`
-	CallbackURL    string `mapstructure:"callback_url"`
-	ConsumerKey    string `mapstructure:"consumer_key"`
-	ConsumerSecret string `mapstructure:"consumer_secret"` 
-	Environment    string `mapstructure:"environment"`
-	TillNo         string `mapstructure:"till_no"`
-	TransactionType string `mapstructure:"transaction_type"`
+	Shortcode        string `mapstructure:"short_code"`
+	Passkey          string `mapstructure:"passkey"`
+	CallbackURL      string `mapstructure:"callback_url"`
+	ConsumerKey      string `mapstructure:"consumer_key"`
+	ConsumerSecret   string `mapstructure:"consumer_secret"`
+	Environment      string `mapstructure:"environment"`
+	TillNo           string `mapstructure:"till_no"`
+	TransactionType  string `mapstructure:"transaction_type"`
 	AccountReference string `mapstructure:"account_reference"`
-	TransactionDesc string `mapstructure:"transaction_desc"`
+	TransactionDesc  string `mapstructure:"transaction_desc"`
 }
 
-// NewMpesaHandler creates a new MpesaHandler with its dependencies.
-func NewMpesaHandler() (*MpesaHandler, error) {
+// NewMpesaStkHandler creates a new MpesaStkHandler with its dependencies.
+func NewMpesaStkHandler() (*MpesaStkHandler, error) {
 	mpesaConfig, err := LoadMpesaConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed to load Mpesa config: %w", err)
 	}
-	return &MpesaHandler{
+	return &MpesaStkHandler{
 		mpesaConfig: mpesaConfig,
 	}, nil
 }
 
-// MpesaHandler will contain dependencies for M-Pesa related logic.
-type MpesaHandler struct {
+// MpesaStkHandler will contain dependencies for M-Pesa related logic.
+type MpesaStkHandler struct {
 	mpesaConfig *MpesaConfig
 }
 
@@ -61,9 +61,8 @@ func LoadMpesaConfig() (*MpesaConfig, error) {
 	return &config, nil
 }
 
-
 // GetAccessToken retrieves the M-Pesa access token from Redis, or fetches a new one if expired.
-func (h *MpesaHandler) GetAccessToken() (string, error) {
+func (h *MpesaStkHandler) GetAccessToken() (string, error) {
 	redisClient := *gdatabase.GetRedis()
 	rConnTTL := gconfig.GetConfig().Database.REDIS.Conn.ConnTTL
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(rConnTTL)*time.Second)
@@ -75,8 +74,8 @@ func (h *MpesaHandler) GetAccessToken() (string, error) {
 		return token, nil
 	}
 
-	consumerKey := h.mpesaConfig.ConsumerKey    
-	consumerSecret := h.mpesaConfig.ConsumerSecret 
+	consumerKey := h.mpesaConfig.ConsumerKey
+	consumerSecret := h.mpesaConfig.ConsumerSecret
 	basicAuth := base64.StdEncoding.EncodeToString([]byte(consumerKey + ":" + consumerSecret))
 
 	req, err := http.NewRequest("GET", "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", nil)
@@ -103,15 +102,16 @@ func (h *MpesaHandler) GetAccessToken() (string, error) {
 	}
 
 	expiresIn := time.Minute * 55
-	err = redisClient.Do(ctx, radix.Cmd(nil, "SETEX", "mpesa:access_token", strconv.Itoa(int(expiresIn.Seconds()))	, tokenResp.AccessToken))
+	err = redisClient.Do(ctx, radix.Cmd(nil, "SETEX", "mpesa:access_token", strconv.Itoa(int(expiresIn.Seconds())), tokenResp.AccessToken))
 	if err != nil {
 		return "", fmt.Errorf("failed to save M-Pesa access token to Redis with TTL: %w", err)
 	}
 
 	return tokenResp.AccessToken, nil
 }
+
 // SendStkPush sends the STK push request to M-Pesa.
-func (h *MpesaHandler) SendStkPush(phone, amount string) (map[string]interface{}, error) {
+func (h *MpesaStkHandler) SendStkPush(phone, amount string) (map[string]interface{}, error) {
 	accessToken, err := h.GetAccessToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get access token: %w", err)
@@ -178,7 +178,7 @@ func (h *MpesaHandler) SendStkPush(phone, amount string) (map[string]interface{}
 	return stkResponse, nil
 }
 
-func (h *MpesaHandler) forceAccessTokenRefresh() error {
+func (h *MpesaStkHandler) forceAccessTokenRefresh() error {
 	redisClient := *gdatabase.GetRedis()
 	rConnTTL := gconfig.GetConfig().Database.REDIS.Conn.ConnTTL
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(rConnTTL)*time.Second)
@@ -187,8 +187,7 @@ func (h *MpesaHandler) forceAccessTokenRefresh() error {
 	return err
 }
 
-
-func (h *MpesaHandler) GetServicePlan(planId int) (model.ServicePlan, error) {
+func (h *MpesaStkHandler) GetServicePlan(planId int) (model.ServicePlan, error) {
 	var plan model.ServicePlan
 	db := gdatabase.GetDB(gconfig.AppDB)
 	result := db.First(&plan, "id = ?", planId)
@@ -211,6 +210,3 @@ func formatPhoneNumber(phone string) string {
 	}
 	return phone // Return the original if it doesn't match any expected format.  Consider logging an error.
 }
-
-
-

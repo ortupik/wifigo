@@ -85,14 +85,14 @@ func SeedRadiusData() error {
 	// Define the radgroupreply data.
 	groupReplies := []radiusmodel.RadGroupReply{
 		// 20 mins
-		{Groupname: "min40@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "1200"},
-		{Groupname: "min40@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "min20@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "1200"},
+		{Groupname: "min20@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
 		{Groupname: "min40@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
 
 		// 2 hours
-		{Groupname: "quickHour@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "7200"},
-		{Groupname: "quickHour@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
-		{Groupname: "quickHour@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+		{Groupname: "hour2@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "7200"},
+		{Groupname: "hour2@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "hour2@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
 
 		// 6 hours
 		{Groupname: "hour6@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "21600"},
@@ -100,9 +100,9 @@ func SeedRadiusData() error {
 		{Groupname: "hour6@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
 
 		// 12 hours
-		{Groupname: "hour8@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "43200"},
-		{Groupname: "hour8@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
-		{Groupname: "hour8@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
+		{Groupname: "hour12@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "43200"},
+		{Groupname: "hour12@Tecsurf", Attribute: "Idle-Timeout", Op: ":=", Value: "600"},
+		{Groupname: "hour12@Tecsurf", Attribute: "Mikrotik-Rate-Limit", Op: ":=", Value: "3072k/3072k 3072k/3072k 1"},
 
 		// 1 day
 		{Groupname: "daily@Tecsurf", Attribute: "Session-Timeout", Op: ":=", Value: "86400"},

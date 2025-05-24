@@ -226,7 +226,6 @@ func UpdateHotspotUser(input dto.HotspotUserInput) (gin.H, int) {
 			}
 		}
 	} else {
-		fmt.Println("Inserting Radcheck Accept" + username)
 		err = insertRadCheck(tx, username, AttrAuthType, defaultOp, "Accept")
 		if err != nil {
 			_ = tx.Rollback()

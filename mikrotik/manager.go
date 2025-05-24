@@ -130,7 +130,7 @@ func newDevicePool(config config.DeviceConfig) (*DevicePool, error) {
 
 	// Create initial connections
 	for i := 0; i < config.PoolSize; i++ {
-		client, err := routeros.Dial(config.Address, config.Username, config.Password)
+		client, err := routeros.Dial(config.Address+":"+config.Port, config.Username, config.Password)
 		if err != nil {
 			// Close the connections we've already established
 			for j := 0; j < i; j++ {

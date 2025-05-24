@@ -24,6 +24,7 @@ type payment model.Payment
 type order model.Order
 type isp model.ISP
 type servicePlan model.ServicePlan
+type device model.MikroTikDevice // Add the device type alias
 
 // DropAllTables - careful! It will drop all the tables!
 func DropAllTables() error {
@@ -39,6 +40,7 @@ func DropAllTables() error {
 		&order{},
 		&servicePlan{},
 		&isp{},
+		&device{}, // Add device to be dropped
 	); err != nil {
 		return err
 	}
@@ -68,6 +70,7 @@ func StartMigration(configure gconfig.Configuration) error {
 			&servicePlan{}, // ServicePlan needs to exist before Order
 			&order{},       // Order needs User and ServicePlan
 			&payment{},     // Payment needs Order (and maybe User)
+			&device{},      // Add device to be migrated
 		); err != nil {
 			return err
 		}
@@ -88,7 +91,7 @@ func Seed() error {
 	tecsurf := model.ISP{
 		Name:    "Tecsurf",
 		LogoURL: "https://example.com/tecsurf-logo.png", // Replace with actual URL
-		DnsName: "tecsurf.co.ke",                   // Add the DnsName here
+		DnsName: "tecsurf.co.ke",                       // Add the DnsName here
 	}
 
 	// Check if Tecsurf ISP already exists
@@ -108,12 +111,12 @@ func Seed() error {
 	}
 
 	// Seed Service Plans
-	servicePlans := [] model.ServicePlan{
+	servicePlans := []model.ServicePlan{
 		{Name: "min1", Description: "1 Minute plan @ 3 Mbps for 1 device", Price: 1, Duration: 60, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "1 Minute", Speed: "3 Mbps", ServiceType: "Hotspot"},
-		{Name: "min40", Description: "20 Minutes plan @ 3 Mbps for 1 device", Price: 5, Duration: 1200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "20 Minutes", Speed: "3 Mbps", ServiceType: "Hotspot"},
-		{Name: "quickHour", Description: "2 Hours plan @ 3 Mbps for 1 device", Price: 10, Duration: 7200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "2 Hours", Speed: "3 Mbps", ServiceType: "Hotspot"},
+		{Name: "min20", Description: "20 Minutes plan @ 3 Mbps for 1 device", Price: 5, Duration: 1200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "20 Minutes", Speed: "3 Mbps", ServiceType: "Hotspot"},
+		{Name: "hour2", Description: "2 Hours plan @ 3 Mbps for 1 device", Price: 10, Duration: 7200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "2 Hours", Speed: "3 Mbps", ServiceType: "Hotspot"},
 		{Name: "hour6", Description: "6 Hours plan @ 3 Mbps for 1 device", Price: 20, Duration: 21600, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "6 Hours", Speed: "3 Mbps", ServiceType: "Hotspot"},
-		{Name: "hour8", Description: "12 Hours plan @ 3 Mbps for 1 device", Price: 27, Duration: 43200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "12 Hours", Speed: "3 Mbps", ServiceType: "Hotspot"},
+		{Name: "hour12", Description: "12 Hours plan @ 3 Mbps for 1 device", Price: 27, Duration: 43200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "12 Hours", Speed: "3 Mbps", ServiceType: "Hotspot"},
 		{Name: "daily", Description: "1 Day plan @ 3 Mbps for 1 device", Price: 35, Duration: 86400, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "1 Day", Speed: "3 Mbps", ServiceType: "Hotspot"},
 		{Name: "daily3", Description: "3 Days plan @ 3 Mbps for 1 device", Price: 85, Duration: 259200, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "3 Days", Speed: "3 Mbps", ServiceType: "Hotspot"},
 		{Name: "weekly", Description: "1 Week plan @ 3 Mbps for 1 device", Price: 150, Duration: 604800, SpeedLimitMbps: "3", IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(), Validity: "1 Week", Speed: "3 Mbps", ServiceType: "Hotspot"},
@@ -144,6 +147,34 @@ func Seed() error {
 			}
 		} else {
 			fmt.Printf("Service Plan '%s' already exists\n", plan.Name)
+		}
+	}
+
+	
+	devicesToSeed := []model.MikroTikDevice{
+		{ID: "mikrotik-001", Name: new(string), Address: "10.0.0.2", Port: "8728", Username: "admin", Password: "12345678", PoolSize: 5, Status: model.StatusActive, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: "mikrotik-002", Name: new(string), Address: "10.0.0.3", Port: "8728", Username: "admin", Password: "12345678", PoolSize: 5, Status: model.StatusInactive, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	// Set names for the devices
+	name1 := "Main Router"
+	devicesToSeed[0].Name = &name1
+	name2 := "Secondary Router"
+	devicesToSeed[1].Name = &name2
+
+	for _, d := range devicesToSeed {
+		var existingDevice model.MikroTikDevice
+		if err := db.Where("id = ?", d.ID).First(&existingDevice).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				if err := db.Create(&d).Error; err != nil {
+					return fmt.Errorf("failed to create device '%s': %w", d.ID, err)
+				}
+				fmt.Printf("MikroTik Device '%s' created\n", d.GetName())
+			} else {
+				return fmt.Errorf("error checking for device '%s': %w", d.ID, err)
+			}
+		} else {
+			fmt.Printf("MikroTik Device '%s' already exists\n", existingDevice.GetName())
 		}
 	}
 

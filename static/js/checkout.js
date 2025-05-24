@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     
-   
     document.getElementById('checkoutForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
     

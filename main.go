@@ -14,9 +14,10 @@ import (
 	"github.com/ortupik/wifigo/mikrotik"
 	"github.com/ortupik/wifigo/queue"
 	nconfig "github.com/ortupik/wifigo/server/config"
+	migrate "github.com/ortupik/wifigo/server/database/migrate"
 	"github.com/ortupik/wifigo/server/router"
+	service "github.com/ortupik/wifigo/server/service"
 	"github.com/ortupik/wifigo/websocket"
-	//migrate "github.com/ortupik/wifigo/server/database/migrate"
 )
 
 // handleError simplifies error handling by logging and exiting the program.
@@ -33,7 +34,7 @@ func main() {
 	handleError(err, "Failed to load configuration")
 
 	err2 := nconfig.Config()
-    handleError(err2, "Failed to NEW load configuration")
+	handleError(err2, "Failed to NEW load configuration")
 
 	// Read configurations
 	configure := gconfig.GetConfig()
@@ -42,12 +43,12 @@ func main() {
 	if gconfig.IsRDBMS() {
 		handleError(gdatabase.InitDB(), "Failed to initialize RDBMS")
 		// Run migrations
-		/*handleError(migrate.DropAllTables(), "Failed to drop app migrations")
-		handleError(migrate.DropRadiusTables(), "Failed to drop radius migrations")
+		handleError(migrate.DropAllTables(), "Failed to drop app migrations")
+		//handleError(migrate.DropRadiusTables(), "Failed to drop radius migrations")
 		handleError(migrate.StartMigration(*configure), "Failed to run app migrations")
-		handleError(migrate.MigrateRadiusModels(*configure), "Failed to run radius migrations")
+		//handleError(migrate.MigrateRadiusModels(*configure), "Failed to run radius migrations")
 		handleError(migrate.Seed(), "Failed to run app seeders")
-		handleError(migrate.SeedRadiusData(), "Failed to run radius seeders")*/
+		//handleError(migrate.SeedRadiusData(), "Failed to run radius seeders")*/
 	}
 
 	if gconfig.IsRedis() {
@@ -63,44 +64,12 @@ func main() {
 	mikrotikManager := mikrotik.NewManager()
 	defer mikrotikManager.Close()
 
-	// Load saved MikroTik configurations
-	// For demonstration, we'll add a sample device
-	sampleDevice := gconfig.DeviceConfig{
-		ID:          "mikrotik1",
-		Name:        "Office Router",
-		Address:     "10.0.0.2:8728",
-		Username:    "admin",
-		Password:    "12345678",
-		PoolSize:    5,
-		ISPID:       "Tecsurf",
-		Description: "Main office router",
-	}
-
-	//store.DeleteConfig(badger.DeviceConfigType, "mikrotik1");
-
-	var deviceWrapper badger.DeviceConfigWrapper
-	err = store.GetConfig(badger.DeviceConfigType, sampleDevice.ID, &deviceWrapper)
+	mikrotikService := service.NewMikroTikManagerService(mikrotikManager)
+	//should be put in a queue job -> adding only active devices(ping) to device manager
+	err = mikrotikService.LoadAllDevices()
 	if err != nil {
-		if err.Error() == "device config not found: mikrotik1" {
-			err = store.SaveConfig(badger.DeviceConfigWrapper{DeviceConfig: sampleDevice})
-			handleError(err, "Failed to save sample device config")
-		} else {
-			handleError(err, "Failed to get device config")
-		}
-	} else {
-		existingDevice := deviceWrapper.DeviceConfig
-		log.Printf("Found existing device config: %+v", existingDevice)
+		handleError(err, "Failed to load devices from database!")
 	}
-
-	currentDevice, _ := mikrotikManager.GetDevice(sampleDevice.ID)
-	if currentDevice == nil {
-		err = mikrotikManager.AddDevice(sampleDevice)
-		if(err != nil) {
-			handleError(err, "Failed to add MikroTik device")
-		}	
-	}
-
-	currentDevice, _ = mikrotikManager.GetDevice(sampleDevice.ID)
 
 	wsHub := websocket.NewHub()
 	go wsHub.Run()
@@ -119,12 +88,12 @@ func main() {
 		}
 	}()
 
-	// Initialize handlers
-	mikrotikHandler := queue.NewMikrotikHandler(mikrotikManager, wsHub)
-	databaseHandler := queue.NewDatabaseHandler(wsHub)
+	// Initialize handlers for queues
+	MikrotikQueueHandler := queue.NewMikrotikQueueHandler(mikrotikService, wsHub)
+	databaseQueueHandler := queue.NewDatabaseQueueHandler(wsHub)
 	handlers := &queue.Handlers{
-		MikrotikHandler: *mikrotikHandler,
-		DatabaseHandler: *databaseHandler,
+		MikrotikQueueHandler: *MikrotikQueueHandler,
+		DatabaseQueueHandler: *databaseQueueHandler,
 	}
 	// Initialize and start queue server in a goroutine
 	queueServer, err := queue.NewServer(redisAddr, mikrotikManager, wsHub, handlers) // Pass handlers

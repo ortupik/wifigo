@@ -103,6 +103,7 @@ type DeviceConfig struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Address     string `json:"address"`
+	Port        string `json:"port"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
 	PoolSize    int    `json:"poolSize"` // Number of connections to maintain

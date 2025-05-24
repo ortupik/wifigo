@@ -7,35 +7,34 @@ import (
 	"log"
 
 	"github.com/hibiken/asynq"
-	"github.com/ortupik/wifigo/mikrotik"
 	"github.com/ortupik/wifigo/server/dto"
-	job "github.com/ortupik/wifigo/server/job"
+	service "github.com/ortupik/wifigo/server/service"
 	"github.com/ortupik/wifigo/websocket"
 )
 
-// MikrotikHandler handles MikroTik related tasks.
-type MikrotikHandler struct {
-	manager *mikrotik.Manager
-	wsHub   *websocket.Hub
+// MikrotikQueueHandler handles MikroTik related tasks.
+type MikrotikQueueHandler struct {
+	mikroTikService       *service.MikroTikMangerService
+	wsHub          *websocket.Hub
 	actionHandlers map[string]func(ctx context.Context, raw json.RawMessage) error
 }
 
-func NewMikrotikHandler(manager *mikrotik.Manager, wsHub *websocket.Hub) *MikrotikHandler {
-	h := &MikrotikHandler{
+func NewMikrotikQueueHandler(mikroTikService *service.MikroTikMangerService, wsHub *websocket.Hub) *MikrotikQueueHandler {
+	h := &MikrotikQueueHandler{
 		actionHandlers: make(map[string]func(ctx context.Context, raw json.RawMessage) error),
 		wsHub:          wsHub,
-		manager: manager,
+		mikroTikService:  mikroTikService,
 	}
 	h.registerHandlers()
 	return h
 }
 
-func (h *MikrotikHandler) registerHandlers() {
+func (h *MikrotikQueueHandler) registerHandlers() {
 	h.actionHandlers[ActionMikrotikLoginUser] = h.handleLoginUser
 	//h.actionHandlers[ActionMikrotikCommand] = h.handleExecuteCommand
 }
 
-func (h *MikrotikHandler) HandleTask(ctx context.Context, task *asynq.Task) error {
+func (h *MikrotikQueueHandler) HandleTask(ctx context.Context, task *asynq.Task) error {
 
 	var payload GenericTaskPayload
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
@@ -43,7 +42,7 @@ func (h *MikrotikHandler) HandleTask(ctx context.Context, task *asynq.Task) erro
 	}
 
 	if payload.System != "mikrotik" {
-		return fmt.Errorf("invalid system for MikrotikHandler: %s", payload.System)
+		return fmt.Errorf("invalid system for MikrotikQueueHandler: %s", payload.System)
 	}
 
 	log.Printf("Processing MiktoTik operation: %s", payload.Action)
@@ -56,28 +55,27 @@ func (h *MikrotikHandler) HandleTask(ctx context.Context, task *asynq.Task) erro
 
 }
 
-func (h *MikrotikHandler) handleLoginUser(ctx context.Context, raw json.RawMessage) error {
-    var data dto.MikrotikLogin
-    if err := json.Unmarshal(raw, &data); err != nil {
-        return fmt.Errorf("failed to decode payload: %w", err)
-    }
+func (h *MikrotikQueueHandler) handleLoginUser(ctx context.Context, raw json.RawMessage) error {
+	var data dto.MikrotikLogin
+	if err := json.Unmarshal(raw, &data); err != nil {
+		return fmt.Errorf("failed to decode payload: %w", err)
+	}
 
-    err := job.LoginHotspotDeviceByAddress(h.manager, data)
-    if err != nil {
-		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "failed", "message": "Could not log you in!"}`)) )
-        if ShouldNotRetryError(err) {
+	err := service.LoginHotspotDeviceByAddress(h.mikroTikService, data)
+	if err != nil {
+		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "failed", "message": "Could not log you in!"}`)))
+		if ShouldNotRetryError(err) {
 			return asynq.SkipRetry
 		}
 		return fmt.Errorf("failed to login user: %w", err)
-    }else{
-		h.wsHub.SendToIP(data.Address,[]byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": "You are now logged in"}`) ))		
-      return nil
+	} else {
+		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": "You are now logged in"}`)))
+		return nil
 	}
 
 }
 
-
-/*func (h *MikrotikHandler) handleExecuteCommand(ctx context.Context, payload *MikrotikCommandPayload) error {
+/*func (h *MikrotikQueueHandler) handleExecuteCommand(ctx context.Context, payload *MikrotikCommandPayload) error {
 	log.Printf("Executing MikroTik command: %s on device: %s", payload.Command, payload.DeviceID)
 
 	pool, err := h.manager.GetDevice(payload.DeviceID)
@@ -127,6 +125,6 @@ func (h *MikrotikHandler) handleLoginUser(ctx context.Context, raw json.RawMessa
 		log.Printf("Callback succeeded: %s", payload.CallbackURL)
 	}
 
-	
+
 	return nil
 }*/

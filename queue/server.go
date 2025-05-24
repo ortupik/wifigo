@@ -2,8 +2,8 @@ package queue
 
 import (
 	"context"
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/hibiken/asynq"
@@ -13,9 +13,9 @@ import (
 
 // Server is the server for processing tasks
 type Server struct {
-	server  *asynq.Server
-	manager *mikrotik.Manager
-	wsHub   *websocket.Hub
+	server   *asynq.Server
+	manager  *mikrotik.Manager
+	wsHub    *websocket.Hub
 	handlers *Handlers // Use the Handlers struct from the same package
 }
 
@@ -26,8 +26,8 @@ type Handler interface {
 
 // Handlers struct to hold all handler instances.
 type Handlers struct {
-	MikrotikHandler   MikrotikHandler // Use the struct directly, not the pointer
-	DatabaseHandler DatabaseHandler // Use the struct directly, not the pointer
+	MikrotikQueueHandler MikrotikQueueHandler // Use the struct directly, not the pointer
+	DatabaseQueueHandler      DatabaseQueueHandler      // Use the struct directly, not the pointer
 	// Add other handlers here as needed.
 }
 
@@ -42,7 +42,7 @@ func NewServer(redisAddr string, manager *mikrotik.Manager, wsHub *websocket.Hub
 				QueueDefault:   3, // Process 3 default tasks at a time
 				QueueReporting: 2, // Process 2 reporting tasks at a time
 			},
-			Concurrency: 10, // Maximum number of concurrent tasks
+			Concurrency:  10, // Maximum number of concurrent tasks
 			ErrorHandler: NewErrorHandler(wsHub),
 		},
 	)
@@ -50,9 +50,9 @@ func NewServer(redisAddr string, manager *mikrotik.Manager, wsHub *websocket.Hub
 		return nil, fmt.Errorf("failed to create asynq server")
 	}
 	return &Server{
-		server:  server,
-		manager: manager,
-		wsHub:   wsHub,
+		server:   server,
+		manager:  manager,
+		wsHub:    wsHub,
 		handlers: handlers,
 	}, nil
 }
@@ -65,9 +65,9 @@ func (s *Server) Start() error {
 	if s.handlers == nil {
 		return fmt.Errorf("handlers is nil") //check if handlers are nil
 	}
-	
-	mux.HandleFunc(TypeMikrotikCommand, s.handlers.MikrotikHandler.HandleTask)
-	mux.HandleFunc(TypeDatabaseOperation, s.handlers.DatabaseHandler.HandleTask)
+
+	mux.HandleFunc(TypeMikrotikCommand, s.handlers.MikrotikQueueHandler.HandleTask)
+	mux.HandleFunc(TypeDatabaseOperation, s.handlers.DatabaseQueueHandler.HandleTask)
 
 	return s.server.Start(mux)
 }
@@ -88,9 +88,9 @@ func ShouldNotRetryError(err error) bool {
 	if err == nil {
 		return false
 	}
-	
+
 	errMsg := err.Error()
-	return strings.Contains(errMsg, "is already logged in") 
+	return strings.Contains(errMsg, "is already logged in")
 }
 
 func NewErrorHandler(wsHub *websocket.Hub) asynq.ErrorHandlerFunc {
