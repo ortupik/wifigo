@@ -44,9 +44,12 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
         username = req.Phone + "@Tecsurf"
 	}
 
+    fmt.Printf("username: %v", username)
+
 	isHomeUser := false
 
-	expirationStatus, err := handler.IsUserExpired(req.Username)
+	expirationStatus, err := handler.IsUserExpired(username)
+	fmt.Printf("ExpiratiouSat: %v %v", expirationStatus, err)
 	if err == nil {
 		if expirationStatus == "NOT_EXPIRED" {
 			c.JSON(http.StatusConflict, gin.H{"error": "Active subscription already exists"})
