@@ -53,7 +53,7 @@ func SetupRouter(configure *gconfig.Configuration, store *storage.Store,
 	})
 
 	// Initialize handlers and controllers
-	mpesaCallbackHandler := handler.NewMpesaCallbackHandler(queueClient, wsHub)
+	mpesaCallbackHandler = handler.NewMpesaCallbackHandler(queueClient, wsHub)
 	mpesaController = controller.NewMpesaController()
 	mikrotikController = controller.NewMikroTikController(manager)
 

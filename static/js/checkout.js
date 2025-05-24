@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body: jsonData
         })
         .then(response => {
+            console.log(response)
             if (!response.ok) {
                 // Handle HTTP errors (e.g., 500, 400)
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -120,10 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json(); // Parse the JSON response
         })
         .then(data => {
+           
             // Handle the JSON response from your server
             if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
                 // Redirect to the success page
-                window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity; // important
+              //  window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity+"&phone="+phoneNumber; // important
                 // Optionally reset the button if you navigate back later
                  payButton.disabled = false;
                  payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';

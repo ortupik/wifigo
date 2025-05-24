@@ -63,13 +63,13 @@ func (h *MikrotikQueueHandler) handleLoginUser(ctx context.Context, raw json.Raw
 
 	err := service.LoginHotspotDeviceByAddress(h.mikroTikService, data)
 	if err != nil {
-		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "failed", "message": "Could not log you in!"}`)))
+		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "failed", "message": "Could not log you in!", "username": "%v", "password": "%v"}`, data.Username, data.Password)))
 		if ShouldNotRetryError(err) {
 			return asynq.SkipRetry
 		}
 		return fmt.Errorf("failed to login user: %w", err)
 	} else {
-		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": "You are now logged in"}`)))
+		h.wsHub.SendToIP(data.Address, []byte(fmt.Sprintf(`{"type":"login", "status": "success", "message": "You are now logged in",  "username": "%v", "password": "%v"}`, data.Username, data.Password)))
 		return nil
 	}
 

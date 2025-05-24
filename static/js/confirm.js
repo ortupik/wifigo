@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const clientIP = urlParams.get('ip');
     const redirectUrl = urlParams.get('redirect_url');
     const devices = urlParams.get('devices');
+    let phone = urlParams.get("phone");
+    let redirectPage = redirectUrl + "/login?voucher="+phone;;
     
     // Elements
     const paymentStatus = document.getElementById('payment-status');
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let socket;
     let countdownInterval;
     let timeLeft = 60; // 2 minutes countdown
+    let lockLoginUpdates = false;
     
     function connectWebSocket() {
         // Use secure WebSocket if the page is loaded over HTTPS
@@ -54,6 +57,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.type === 'payment') {
                 handlePaymentUpdate(data);
             }
+            if(data.type === "login"){
+                //prevent retries from overwrites due to user or system mis-actions
+                if(!lockLoginUpdates){
+                    lockLoginUpdates = true;
+                    handleLogin(data);
+                }
+            }
+
+            if(data.type === "create_account"){
+                //we shouldnt get this. prevented at checkout(fallback for unforseen cases)!
+                if(data.message === "User already subscribed"){
+                    if(devices > 1){
+                        redirectPage = "/howto?redirectUrl="+redirectUrl+"&devices="+devices+"&phone="+phone;
+                    }
+                    setTimeout(function() {
+                     window.location.href = redirectPage;
+                    }, 3000);
+                }
+            }
         };
         
         socket.onclose = function() {
@@ -65,6 +87,34 @@ document.addEventListener('DOMContentLoaded', function() {
         socket.onerror = function(error) {
             console.error('WebSocket error:', error);
         };
+    }
+
+    function handleLogin(data){
+         // Auto-redirect after 3 seconds
+        
+         if(data.status === "failed"){
+            if(devices > 1){
+                redirectPage = "/howto?redirectUrl="+redirectUrl+"&devices="+devices+"&phone="+phone;
+             }
+         }else{ 
+            if(data.username){
+                if(devices > 1){
+                    redirectPage = "/howto?redirectUrl="+redirectUrl+"&devices="+devices+"&username="+data.username;
+                }else{
+                    redirectPage = redirectUrl + "/status";
+                }
+            }
+
+           /* Not handling home users yet
+            if(data.Username && data.Password){
+                redirectPage = redirectUrl + "/login?username="+data.username+"&password="+data.password;
+            }*/
+    
+         }
+
+         setTimeout(function() {
+            window.location.href = redirectPage;
+        }, 3000);
     }
     
     function handlePaymentUpdate(data) {
@@ -103,15 +153,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show success notification
             showAlert('Payment successful! You can now connected', 'success');
-            
-            // Auto-redirect after 5 seconds
             setTimeout(function() {
-                if(devices > 1){
-                   // window.location.href = "/howto?redirectUrl="+redirectUrl+"&devices="+devices; //redirectUrl for single device
-                }else{
-                   // window.location.href = redirectUrl + "/status?voucher="+data.;
-                }
+                window.location.href = redirectPage;
             }, 5000);
+            
+           
         } else {
             // Error state
             paymentStatus.className = 'payment-status error fade-in';

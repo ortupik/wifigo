@@ -52,7 +52,6 @@ type MpesaStkHandler struct {
 func LoadMpesaConfig() (*MpesaConfig, error) {
 	var config MpesaConfig
 	sub := nconfig.GetConfig().Sub("mpesa")
-	fmt.Printf("mpesa config: %+v\n", sub)
 	if sub == nil {
 		return nil, fmt.Errorf("mpesa config not found")
 	}
