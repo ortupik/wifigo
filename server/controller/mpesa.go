@@ -38,7 +38,7 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(req)
+	fmt.Printf("req %v",req)
 
 	expirationStatus, err := handler.IsUserExpired(req.Username)
 	if err == nil {

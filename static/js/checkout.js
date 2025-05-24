@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         payButton.disabled = true;
         payButton.innerHTML = '<span>Processing...</span><div class="spinner"></div>';
-    
+          
         // Get form data
         const formDataObject = {
             isp_id: ispId,
@@ -100,9 +100,13 @@ document.addEventListener('DOMContentLoaded', function() {
             ip: ip,
             dns_name: dns_name
         };
+
     
         // Convert form data to JSON
         const jsonData = JSON.stringify(formDataObject);
+
+        console.log(jsonData)
+
     
         // Send the POST request to your API endpoint
         fetch('/api/v1/mpesa/checkout', {
