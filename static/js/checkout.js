@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json(); // Parse the JSON response
         })
         .then(data => {
-           
+           console.log(data)
             // Handle the JSON response from your server
             if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
                 // Redirect to the success page
