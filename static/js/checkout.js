@@ -104,9 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Convert form data to JSON
         const jsonData = JSON.stringify(formDataObject);
-
-        console.log(jsonData)
-
     
         // Send the POST request to your API endpoint
         fetch('/api/v1/mpesa/checkout', {
