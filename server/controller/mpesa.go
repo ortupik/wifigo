@@ -40,7 +40,7 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		return
 	}
 
-	//fetch (fetch Realm based on domain)
+	//fetch (fetch Realm based on domain from badger key value)
 	realm := "Tecsurf"
 	if(username == ""){
         username = req.Phone + "@" + realm
@@ -66,8 +66,9 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 
 	amount := plan.Price
 
-	if req.DeviceCount > 2 {
+	if req.DeviceCount > 1 {
 		amount = int(math.Round(float64(amount) * 0.7)) // Apply 30% discount
+		fmt.Printf("amount %d", amount)
 	}
 
 	res, err := mc.MpesaStkHandler.SendStkPush(req.Phone, fmt.Sprintf("%d", amount))
