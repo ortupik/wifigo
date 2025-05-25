@@ -66,11 +66,9 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 
 	amount := plan.Price
 
-	fmt.Printf("************DC %d", req.DeviceCount)
 
 	if req.DeviceCount > 1 {
-		amount = int(math.Round(float64(amount) * 0.7)) // Apply 30% discount
-		fmt.Printf("amount %d", amount)
+		amount = int(math.Round(float64(amount)  * float64(req.DeviceCount) * 0.7)) // Apply 30% discount
 	}
 
 	res, err := mc.MpesaStkHandler.SendStkPush(req.Phone, fmt.Sprintf("%d", amount))
