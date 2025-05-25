@@ -146,10 +146,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             // Handle network errors or errors thrown in the try block
-            console.error('Fetch Error:', error);
+           // console.error('Fetch Error:', error);
 
             if (error.message === "active_subscription") {
-                showAlert("You already have an active subscription!", "info");
+                showAlert("You already have an active subscription!", "error");
             } else if (error.message.includes("Invalid request")) { // Catch specific error from your backend
                 showAlert("Invalid request. Please check your details.", "error");
             } else if (error.message.includes("Invalid plan")) {
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-remove after 5 seconds
     setTimeout(function() {
         alertContainer.innerHTML = '';
-    }, 5000);
+    }, 7000);
 }
 
 });
