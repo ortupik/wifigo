@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    
-    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+
+    document.getElementById('checkoutForm').addEventListener('submit', async function(event) {
         event.preventDefault(); // Prevent the default form submission
     
         const phoneNumber = document.getElementById('phone').value;
@@ -106,44 +106,65 @@ document.addEventListener('DOMContentLoaded', function() {
         const jsonData = JSON.stringify(formDataObject);
     
         // Send the POST request to your API endpoint
-        fetch('/api/v1/mpesa/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: jsonData
-        })
-        .then(response => {
+        try {
+            const response = await fetch('/api/v1/mpesa/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonData
+            });
+
             if (!response.ok) {
-                // Handle HTTP errors (e.g., 500, 400)
-                throw new Error(response.json());
+                // Attempt to parse the error response as JSON
+                // This will be caught by the outer catch block if parsing fails
+                const errorData = await response.json();
+                
+                // You can now access properties from errorData
+                if (response.status === 409 && errorData.error === "Active subscription already exists") {
+                    throw new Error("active_subscription"); // Throw a specific error identifier
+                } else {
+                    // For other HTTP errors (e.g., 400, 500)
+                    throw new Error(errorData.error || "An unexpected error occurred.");
+                }
             }
-            return response.json(); // Parse the JSON response
-        })
-        .then(data => {
-            // Handle the JSON response from your server
-            if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
+
+            const data = await response.json(); // Parse the successful JSON response
+
+            // Handle the JSON response from your server for successful M-Pesa initiation
+            if (data.ResponseCode === 0 || data.ResponseCode === '0') {
                 // Redirect to the success page
-              //  window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity+"&phone="+phoneNumber; // important
-                // Optionally reset the button if you navigate back later
-                 payButton.disabled = false;
-                 payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
+                 window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity+"&phone="+phoneNumber; // important
+                showAlert("M-Pesa payment initiated. Check your phone!", "success");
             } else {
-                // Handle M-Pesa business logic errors (e.g., insufficient funds)
-                showAlert("Something went wrong, re-enter phone number!", "error"); // show to user
-                // Re-enable the submit button and reset text
-                payButton.disabled = false;
-                payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
+                // Handle M-Pesa business logic errors (e.g., invalid phone, internal M-Pesa error)
+                // Your Go backend sends 'errorCode', 'errorMessage', 'requestId'
+                const errorMessage = data.errorMessage || "Something went wrong with the M-Pesa request.";
+                showAlert(errorMessage, "error");
+                console.error("M-Pesa Response Error:", data);
             }
-        })
-        .catch(error => {
-            // Handle network errors or errors in the fetch() chain
-            console.error('Error:', error);
-            showAlert("Something went wrong, re-enter phone number!", "error");
-            // Re-enable the submit button and reset text
+
+        } catch (error) {
+            // Handle network errors or errors thrown in the try block
+            console.error('Fetch Error:', error);
+
+            if (error.message === "active_subscription") {
+                showAlert("You already have an active subscription!", "info");
+            } else if (error.message.includes("Invalid request")) { // Catch specific error from your backend
+                showAlert("Invalid request. Please check your details.", "error");
+            } else if (error.message.includes("Invalid plan")) {
+                showAlert("The selected plan is invalid.", "error");
+            } else if (error.message.includes("STK Push failed")) {
+                showAlert("Failed to initiate M-Pesa STK Push. Please try again.", "error");
+            }
+            else {
+                showAlert("Something went wrong, please try again!", "error");
+            }
+        } finally {
+            // This block always executes, regardless of success or failure
             payButton.disabled = false;
             payButton.innerHTML = '<span>Pay Now</span><i class="fas fa-arrow-right"></i>';
-        });
+        }
     });
     
  // Function to show alerts
