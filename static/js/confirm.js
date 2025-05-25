@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         socket = new WebSocket(`${protocol}//${host}/ws?ip=${clientIP}`);
         
         socket.onopen = function() {
-            console.log('WebSocket connected');
             // Show payment pending UI after connection is established
             startCountdown();
             // After 30 seconds of waiting, show the try again option
@@ -104,11 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     redirectPage = redirectUrl + "/status";
                 }
             }
-
-           /* Not handling home users yet
-            if(data.Username && data.Password){
-                redirectPage = redirectUrl + "/login?username="+data.username+"&password="+data.password;
-            }*/
     
          }
 
@@ -155,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('Payment successful! You can now connected', 'success');
             setTimeout(function() {
                 window.location.href = redirectPage;
-            }, 5000);
+            }, 4000);
             
            
         } else {

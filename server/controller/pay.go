@@ -88,9 +88,18 @@ func ConfirmController(c *gin.Context) {
 func HowtoController(c *gin.Context) {
 	devices := c.Query("devices")
 	redirectUrl := c.Query("redirectUrl")
+	phone := c.Query("phone")
+	username := c.Query("username")
+	voucher := username
+
+	if(voucher == ""){
+		voucher = phone + "@Tecsurf"
+	}
+
 	c.HTML(http.StatusOK, "howto.html", gin.H{
 		"redirectUrl": redirectUrl,  
-		"devices":     devices,      
+		"devices":     devices,   
+		"voucher": voucher,   
 	})
 }
 

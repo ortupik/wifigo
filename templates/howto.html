@@ -463,6 +463,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const redirectUrl = "{{ .redirectUrl }}";
             const deviceCount = parseInt("{{ .devices }}") || 2;
+            const voucher = "{{ .voucher }}";
             
             // Update device count displays
             document.getElementById('device-count').innerHTML = `<i class="fas fa-devices"></i>${deviceCount} devices`;
@@ -500,7 +501,7 @@
             
             // Function to redirect to Wi-Fi
             function redirectToWifi() {
-                window.location.href = redirectUrl || '/';
+                window.location.href = redirectUrl || '/login?voucher='+voucher;
             }
         });
     </script>
