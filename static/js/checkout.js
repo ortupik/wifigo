@@ -117,15 +117,13 @@ document.addEventListener('DOMContentLoaded', function() {
             body: jsonData
         })
         .then(response => {
-            console.log(response.json())
             if (!response.ok) {
                 // Handle HTTP errors (e.g., 500, 400)
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(response);
             }
             return response.json(); // Parse the JSON response
         })
         .then(data => {
-           console.log(data)
             // Handle the JSON response from your server
             if (data.ResponseCode === 0 || data.ResponseCode === '0') { //check for string
                 // Redirect to the success page
