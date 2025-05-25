@@ -31,6 +31,7 @@ func NewMpesaController() *MpesaController {
 
 func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 
+	//do proper validations of the request
 	req := dto.STKPushRequest
 	username := req.Username
 
@@ -39,17 +40,17 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 		return
 	}
 
-	//fetch isp name based on dns_name isp_id may not be needed
+	//fetch (fetch Realm based on domain)
+	realm := "Tecsurf"
 	if(username == ""){
-        username = req.Phone + "@Tecsurf"
+        username = req.Phone + "@" + realm
 	}
 
-    fmt.Printf("username: %v", username)
-
+	//check if user is Home User from req.IsHomeUser(true ? then username changes not to use phone)
 	isHomeUser := false
 
 	expirationStatus, err := handler.IsUserExpired(username)
-	fmt.Printf("ExpiratiouSat: %v %v", expirationStatus, err)
+
 	if err == nil {
 		if expirationStatus == "NOT_EXPIRED" {
 			c.JSON(http.StatusConflict, gin.H{"error": "Active subscription already exists"})
