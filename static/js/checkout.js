@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             if (!response.ok) {
                 // Handle HTTP errors (e.g., 500, 400)
-                throw new Error(response);
+                throw new Error(response.json());
             }
             return response.json(); // Parse the JSON response
         })
