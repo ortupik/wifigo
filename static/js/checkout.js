@@ -134,8 +134,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Handle the JSON response from your server for successful M-Pesa initiation
             if (data.ResponseCode === 0 || data.ResponseCode === '0') {
                 // Redirect to the success page
-                 window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity+"&phone="+phoneNumber; // important
                 showAlert("M-Pesa payment initiated. Check your phone!", "success");
+                setTimeout(function() {
+                    window.location.href = '/confirm?ip='+ip+"&redirect_url="+redirectUrl+"&devices="+quantity+"&phone="+phoneNumber; // important
+                }, 3000)
             } else {
                 // Handle M-Pesa business logic errors (e.g., invalid phone, internal M-Pesa error)
                 // Your Go backend sends 'errorCode', 'errorMessage', 'requestId'
@@ -149,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
            // console.error('Fetch Error:', error);
 
             if (error.message === "active_subscription") {
-                showAlert("You already have an active subscription!", "error");
+                showAlert("You already have an active subscription, Go to Login!", "error");
             } else if (error.message.includes("Invalid request")) { // Catch specific error from your backend
                 showAlert("Invalid request. Please check your details.", "error");
             } else if (error.message.includes("Invalid plan")) {
