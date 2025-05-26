@@ -380,6 +380,7 @@ input[type="email"]:focus {
     padding: 0.25rem; /* 12px / 16px = 0.75rem */
     border-radius: var(--radius);
     justify-content: center;
+    margin-top: 0.4rem;
 }
 
 .payment-logo img {
