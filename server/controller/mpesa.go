@@ -66,7 +66,6 @@ func (mc *MpesaController) ExpressStkHandler(c *gin.Context) {
 
 	amount := plan.Price
 
-
 	if req.DeviceCount > 1 {
 		amount = int(math.Round(float64(amount)  * float64(req.DeviceCount) * 0.7)) // Apply 30% discount
 	}
