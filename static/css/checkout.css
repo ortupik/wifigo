@@ -179,7 +179,6 @@ body {
     color: var(--primary);
     background: beige;
     text-align: center;
-    font-family: monospace;
 }
 
 .product-info {
