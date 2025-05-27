@@ -231,7 +231,6 @@ body {
     justify-content: center;
     user-select: none;
     transition: var(--transition);
-    border-radius:8px;
 }
 
 .devices-btn:hover {
@@ -534,7 +533,7 @@ input[type="email"]:focus {
     }
 
     .product-name {
-        font-size: 1.5rem; /* relative to parent font size */
+        font-size: 1.3rem; /* relative to parent font size */
     }
 
     .step-label {
