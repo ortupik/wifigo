@@ -212,7 +212,7 @@ body {
     align-items: center;
     border-radius: 0.5rem; /* 8px / 16px = 0.5rem */
     overflow: hidden;
-    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.1); /* 0 1px 3px */
+   /* box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.1); /* 0 1px 3px */
 }
 
 .devices-btn {
@@ -228,6 +228,7 @@ body {
     justify-content: center;
     user-select: none;
     transition: var(--transition);
+    border-radius:8px;
 }
 
 .devices-btn:hover {
