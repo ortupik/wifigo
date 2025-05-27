@@ -20,7 +20,9 @@
                     <!-- Product section -->
                     <div class="product">
                         <div class="product-details">
-                            <div class="product-name"> {{ .ISP.Name }} {{ .ServicePlan.ServiceType }} plan</div>
+                            <div class="product-name">
+                                <i class="fas fa-wifi" style="margin-right: 5px;"></i>
+                                 {{ .ISP.Name }} {{ .ServicePlan.ServiceType }} plan</div>
                             <div class="product-info">
                                 <span id="validity"> {{ .ServicePlan.Validity }}</span>
                                 <span id="speed">{{ .ServicePlan.Speed }}</span>
