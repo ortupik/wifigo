@@ -177,6 +177,9 @@ body {
     font-size: 1.2rem; /* relative to parent font size */
     margin-bottom: 0.475rem; /* 6px / 16px = 0.375rem */
     color: var(--primary);
+    background: beige;
+    text-align: center;
+    font-family: monospace;
 }
 
 .product-info {
